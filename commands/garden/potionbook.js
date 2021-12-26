@@ -71,7 +71,7 @@ module.exports = {
             components: [row]
         });
 
-        const filter = (i) => i.user.id === message.author.id;
+        const filter = (i) => i.user.id === message.author.id && i.message.id == book.id;
         const collector = message.channel.createMessageComponentCollector({
             filter,
             idle: 60 * 1000

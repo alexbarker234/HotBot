@@ -61,7 +61,8 @@ module.exports = {
 
             let subInv;
             let itemExists = false;
-            ['fish','plants'].forEach(itemType => {
+            let itemTypes = ['fish','plants'];
+            for (const itemType of itemTypes) {
                 if (client[itemType].get(itemName)) itemExists = true;
 
                 for (const item of user.inventory[itemType]) {
@@ -71,7 +72,7 @@ module.exports = {
                         break;
                     }
                 }
-            });
+            }
             if (!itemExists) return message.channel.send(`${itemName} doesn't exist`)
             if (!subInv) return message.channel.send(`you dont have any ${itemName}`)
 
@@ -90,14 +91,15 @@ module.exports = {
                         .setStyle('PRIMARY')
                 )
 
-            message.channel.send({
+            let brewMsg = await message.channel.send({
                 content:"start heating your brew?", 
                 components: [row]
                 })
             
-            const filter = (i) => i.user.id === message.author.id;
+            const filter = (i) => i.user.id === message.author.id && i.message.id === brewMsg.id;
             const collector = message.channel.createMessageComponentCollector({
-                filter
+                filter,
+                idle: 5 * 60 * 1000
             })
             let seconds = 0;
             let counter;

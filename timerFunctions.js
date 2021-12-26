@@ -110,7 +110,7 @@ var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
     
     let usersClicked = [];
 
-    const filter = (i) => !usersClicked.includes(i.user.id)
+    const filter = (i) => !usersClicked.includes(i.user.id) && i.message.id === butterflyMessage.id;
     const collector = channel.createMessageComponentCollector({
         filter,
         time: 3 * 60 * 1000

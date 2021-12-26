@@ -11,14 +11,14 @@ module.exports = {
     description: 'view garden',
     usage: `%PREFIX%garden\n`
         + `%PREFIX%garden details`,
-    async execute(client, message, args, user, userStats){
+    async execute(client, message, args, user, userStats) {
         gardenFunctions.fixDefaultGarden(user);
 
         user.save();
 
         if (args[0] == "details") {
             let plantList = "";
-            for(let i = 0; i < userStats.gardenPlots; i++) {
+            for (let i = 0; i < userStats.gardenPlots; i++) {
                 let plant = user.garden.plants[i];
                 let plantData = client.plants.get(plant.name);
                 let t = "`";
@@ -30,9 +30,9 @@ module.exports = {
                     if (grownMs < 0) grownTime = "grown!";
 
                     plantList += `🌿**time until grown:** ${grownTime}\n`
-                                + `💧**water level:** ${(waterLevel * 100).toFixed(2)}%\n`
-                                + `🍂**dehydration:** ${new Date(plant.timeUnwatered).toCountdown()}\n`;
-                }                
+                        + `💧**water level:** ${(waterLevel * 100).toFixed(2)}%\n`
+                        + `🍂**dehydration:** ${new Date(plant.timeUnwatered).toCountdown()}\n`;
+                }
             }
             if (plantList == "") plantList = "error";
 
@@ -41,15 +41,15 @@ module.exports = {
             for (const upgrade of user.upgrades) {
                 if (!gardenUpgrades.includes(upgrade.name)) continue;
                 let upgradeData = client.upgrades.get(upgrade.name);
-                if (!upgradeData) {console.log(`couldnt find ${upgrade.name} data`); continue;}
+                if (!upgradeData) { console.log(`couldnt find ${upgrade.name} data`); continue; }
                 upgradeList += `**${upgradeData.name}** x${upgrade.count}
                                 ❓${upgradeData.effect}\n`
             }
 
             const embed = new MessageEmbed()
-            .setColor('#63e674')
-            .setTitle(message.author.username + "'s garden")
-            if(upgradeList != "") embed.addField("upgrades", upgradeList);
+                .setColor('#63e674')
+                .setTitle(message.author.username + "'s garden")
+            if (upgradeList != "") embed.addField("upgrades", upgradeList);
             embed.addField("plants", plantList);
             message.channel.send({ embeds: [embed] });
         }
@@ -71,16 +71,16 @@ module.exports = {
                         // plot
                         context.drawImage(plot, plotX, plotY, 84, 44);
                         // plant
-                        if (plantData){
+                        if (plantData) {
                             let plantFileName = plant.name.split(' ').join(''); // remove all spaces
                             const plantTex = await Canvas.loadImage(`./assets/garden/plants/${plantFileName}.png`);
                             context.drawImage(plantTex, plotX, plotY - 14, 84, 58);
                         }
-                        else if(plant.name != "none"){
+                        else if (plant.name != "none") {
                             context.font = '15px Notalot60';
                             context.fillStyle = '#ffffff';
-                            context.fillText(plant.name, plotX + 30, plotY + 20);    
-                        }          
+                            context.fillText(plant.name, plotX + 30, plotY + 20);
+                        }
                     }
                     else if (layer == 1 && plantData) {
                         let barLocX = 8;
@@ -94,7 +94,7 @@ module.exports = {
                         context.fillRect(plotX + barLocX + 2, plotY + barLocY + 2, waterBarSize, 4);
                         // growth
                         context.fillStyle = '#99e550';
-                        let growthBarSize = Math.clamp(20 * gardenFunctions.calculateGrowthPercent(plant, userStats, plantData),0, 20);
+                        let growthBarSize = Math.clamp(20 * gardenFunctions.calculateGrowthPercent(plant, userStats, plantData), 0, 20);
                         context.fillRect(plotX + barLocX + 2, plotY + barLocY + 8, growthBarSize, 4);
                     }
 
@@ -107,9 +107,45 @@ module.exports = {
                 }
             }
 
+            let date =  Date.nowWA();
+            let timeFraction = date.getHours() + (date.getMinutes() / 60);
+            let darkness = 0;
+            if (date.betweenHours(20,6)) darkness = 0.6;
+            else if (date.betweenHours(6,8)) darkness = 1 - (((timeFraction - 6) / 2) * 0.6)
+            else if (date.betweenHours(18,20)) darkness = ((timeFraction - 18) / 2) * 0.6
+            
+            context.globalAlpha = darkness;
+            context.globalCompositeOperation = "source-atop";
+            context.drawImage(getDarkMask(canvas), 0, 0, canvas.width, canvas.height)
+            context.globalAlpha = 1.0;
+            context.globalCompositeOperation = "source-over";
+
             const attachment = new MessageAttachment(canvas.toBuffer(), 'garden.png');
 
             message.channel.send({ files: [attachment] });
         }
     }
-}   
+}
+function getDarkMask(masterCanvas) {
+    const canvas = Canvas.createCanvas(masterCanvas.width, masterCanvas.height);
+    const context = canvas.getContext('2d');
+
+    //drawLight(context, 30, 60, 5, 60);
+    //drawLight(context, 90, 70, 5, 60);
+    //drawLight(context, 50, 150, 5, 60);
+
+    context.globalCompositeOperation = "source-out";
+    context.fillStyle = "#1f1d52";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.globalCompositeOperation = "source-over";
+
+    return canvas;
+}
+function drawLight(context, X, Y, innerRadius, outerRadius) {
+    var grd = context.createRadialGradient(X, Y, innerRadius, X, Y, outerRadius);
+    grd.addColorStop(0, "rgba(255, 255, 255, 255)");
+    grd.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+    context.fillStyle = grd;
+    context.fillRect(X - outerRadius, Y - outerRadius, outerRadius * 2, outerRadius * 2);
+}

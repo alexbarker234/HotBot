@@ -9,7 +9,10 @@
     - notifications - turn on or off notifications
     - dehydration notifications
     - wither notifications
-    - growth ntifications
+    - growth notifications
+`leaderboards`
+    - !leaderboard to view the different leaderboards you can view
+    - tracking starts from this update, all previous fish, flarins, etc is not counted sorry :()
 `technical`
     - reworked user query code
     - reworked weather code

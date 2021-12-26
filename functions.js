@@ -423,6 +423,8 @@ Number.prototype.fixFPErrors =
     return parseFloat(this.toFixed(4));
 }
 
+Math.lerp = function(start, end, amount) { return start + amount * (end - start)}
+
 Math.clamp = function(num, min, max) { return Math.min(Math.max(num, min), max); }
 
 //  modified to allow larger influencesversion of : https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range

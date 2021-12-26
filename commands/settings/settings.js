@@ -63,7 +63,7 @@ module.exports = {
                 components: [row, row2]
             });  
             
-            const filter = (i) => i.user.id === message.author.id;
+            const filter = (i) => i.user.id === message.author.id && i.message.id === settingsMsg.id;
             const collector = message.channel.createMessageComponentCollector({
                 filter,
                 idle: 60 * 1000
@@ -111,7 +111,7 @@ async function booleanSetting(channel, setting, userID, user) {
 
     let settingsMsg = await channel.send({embeds: [embed], components: [row]})
 
-    const filter = (i) => i.user.id === userID;
+    const filter = (i) => i.user.id === userID && i.message.id === settingsMsg.id;
     const collector = channel.createMessageComponentCollector({
         filter,
         idle: 60 * 1000
