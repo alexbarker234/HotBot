@@ -4,9 +4,9 @@ const creatureUserModel = require('./models/creatureUserSchema');
 const guildSettingsModel = require('./models/guildSettingsSchema');
 const functions = require("./functions.js");
 
-exports.chooseFish = (client, rarityInfluence) =>{
+exports.chooseFish = (client, rarityInfluence) => {
     availableFish = [];
-    
+
     for (const [name, fish] of client.fish) {
         if (fish.available()) availableFish.push(fish);
     }
@@ -25,7 +25,7 @@ exports.chooseFish = (client, rarityInfluence) =>{
         scaledWeighting.set(fish.name, fish.rarity() + (averageWeight - fish.rarity()) * rarityInfluence)
     }
 
-    let rand = Math.random() * weightSum; 
+    let rand = Math.random() * weightSum;
     for (const fish of availableFish) {
         if (rand <= scaledWeighting.get(fish.name)) return fish;
         rand -= scaledWeighting.get(fish.name);
@@ -34,7 +34,10 @@ exports.chooseFish = (client, rarityInfluence) =>{
     return null; // should never happen lmao but you know OrangeCode™
 }
 
-exports.chooseChestRewards = (client, user, addToUser) => {
+
+exports.chooseChestRewards = async (client, user, addToUser) => {
+    const userStats = await functions.getUserStats(client, user.userID, user.guildID);
+
     let chestRewards = [];
     let chestTier = "";
     let flarinReward = 0;
@@ -44,6 +47,7 @@ exports.chooseChestRewards = (client, user, addToUser) => {
     seeds.set("Gasbloom Seeds", 0.6);
     seeds.set("Starlight Spud Seeds", 0.3);
     seeds.set("Scorchbean Seeds", 0.1);
+    seeds = functions.weightScale(seeds, userStats.chestMultiplier - 1)
 
     baitOptions = new Map();
     baitOptions.set("Orbide", 1.2);
@@ -52,8 +56,12 @@ exports.chooseChestRewards = (client, user, addToUser) => {
     baitOptions.set("Steelshell", 0.2);
     baitOptions.set("Smokelancer", 0.1);
     baitOptions.set("Toxicane", 0.1);
+    baitOptions = functions.weightScale(baitOptions, userStats.chestMultiplier - 1)
 
-    let numRewards = Math.floor(Math.biasedRand(1,6,1,1)) // 1-5 rewards, more likely to get less
+    let min = 1;
+    let max = 6;
+    let target = min + ((max- min) * (userStats.chestMultiplier- 1))
+    let numRewards = Math.floor(Math.biasedRand(min, max, 1, target)) // 1-5 rewards, more likely to get less
     if (numRewards > 3) chestTier = "Rare";
     //console.log("chest rewards: "+ numRewards);
     for (let i = 0; i < numRewards; i++) {
@@ -71,25 +79,25 @@ exports.chooseChestRewards = (client, user, addToUser) => {
             functions.addThingToUser(chestRewards, baitChoice, baitNum)
             if (addToUser) functions.addThingToUser(user.inventory.bait, baitChoice, baitNum);
         }
-        else if (rand == 2){
-            flarinReward += Math.floor(Math.biasedRand(10,500,50,1.5));
+        else if (rand == 2) {
+            flarinReward += Math.floor(Math.biasedRand(10, 500, 50, 1.5));
             if (addToUser) user.flarins += flarinReward;
         }
     }
     // 1/25 to get an upgrade
-    if (Math.random()  < 1/25) {
+    if (Math.random() < 1 / 25) {
         chestTier = "Mythic";
         let gloveCount = 0;
-        for (const upgrade of user.upgrades) 
+        for (const upgrade of user.upgrades)
             if (upgrade.name == "Ancient Gloves") gloveCount = upgrade.count;
         let upgradeData = functions.getItem(client, "Ancient Gloves");
         if (!upgradeData) return console.log(`error getting ${upgrade.name} data`)
-        if(functions.getUpgradeCount(user, "Ancient Gloves") < upgradeData.max) {
+        if (functions.getUpgradeCount(user, "Ancient Gloves") < upgradeData.max) {
             functions.addThingToUser(chestRewards, "Ancient Gloves", 1)
             if (addToUser) functions.addThingToUser(user.upgrades, "Ancient Gloves", 1);
         }
     }
-    return { chestRewards: chestRewards, chestTier: chestTier, flarinReward: flarinReward};
+    return { chestRewards: chestRewards, chestTier: chestTier, flarinReward: flarinReward };
 }
 
 /*

@@ -11,21 +11,21 @@ module.exports = {
         + "%PREFIX%godgive flarins [user] [amount]\n"
         + "%PREFIX%godgive boost [user] [name]",
     admin: true,
-    async execute(client, message, args, Discord){  
+    async execute(client, message, args, user, userStats){  
         if (!args[1]) return message.channel.send("incorrect usage");
         args[1] = args[1].replace(/[\\<>@#&!]/g, "");
         
-        let user = await functions.getUser(args[1], message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
+        let userToGive = await functions.getUser(args[1], message.guild.id);
+        if (!userToGive) return message.channel.send("can't find profile");
 
         // ITEM
 
         if (args[0] == "item") {
             if (!args[4]) return message.channel.send("incorrect usage");
-            if(!user.inventory[args[2]]) return message.channel.send('that subinv doesnt exist')
+            if(!userToGive.inventory[args[2]]) return message.channel.send('that subinv doesnt exist')
 
             let itemName = args.slice(4).join(' ').toCaps();
-            functions.addThingToUser(user.inventory[args[2]], itemName, args[3]);
+            functions.addThingToUser(userToGive.inventory[args[2]], itemName, args[3]);
 
             message.channel.send(`given <@!${args[1]}> ${args[3]} ${itemName}`)
         }
@@ -39,7 +39,7 @@ module.exports = {
             if (!egg) return console.log(`couldnt find ${eggName}`);
 
             const eggData = {name : eggName, obtained : new Date(), hatchTime : egg.hatchTime }
-            user.eggs.push(eggData);
+            userToGive.eggs.push(eggData);
 
             message.channel.send(`given <@!${args[1]}> ${eggName}`);
         }
@@ -51,7 +51,7 @@ module.exports = {
             let creatureName = args.slice(3).join(' ').toCaps();
             if (!client.creatures.get(creatureName)) return console.log(`couldnt find ${creatureName}`);
 
-            functions.addThingToUser(user.creatures, creatureName, parseInt(args[2]));
+            functions.addThingToUser(userToGive.creatures, creatureName, parseInt(args[2]));
 
             message.channel.send(`given <@!${args[1]}> ${args[2]} ${creatureName}`);
         }
@@ -60,7 +60,7 @@ module.exports = {
 
         else if (args[0] == "flarins") {
             if (!args[2]) return message.channel.send("incorrect usage");
-            user.flarins += parseInt(args[2]);
+            userToGive.flarins += parseInt(args[2]);
 
             message.channel.send(`given <@!${args[1]}> ${args[2]} flarins`);
         }
@@ -73,10 +73,10 @@ module.exports = {
             let boostName = args.slice(2).join(' ').toCaps();
             if (!client.boosts.get(boostName)) return message.channel.send(`couldnt find ${boostName}`);
 
-            if(functions.addBoost(client, user, boostName)) 
+            if(functions.addBoost(client, userToGive, boostName)) 
                 message.channel.send(`boosted <@!${args[1]}> with ${boostName}`);
             else message.channel.send(`<@!${args[1]}> already has ${boostName}`);
         }
-        user.save()
+        userToGive.save()
     }
 }   

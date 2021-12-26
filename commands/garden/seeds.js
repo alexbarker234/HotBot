@@ -7,10 +7,7 @@ module.exports = {
     name: 'seeds',
     description: 'see the details of your owned seeds',
     usage: "%PREFIX%seeds",
-    async execute(client, message, args, Discord){  
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
+    async execute(client, message, args, user, userStats){  
         let seedText = "";
         for (const item of user.inventory.seeds) {
             let plantData = client.plants.get(item.name.replace(" Seeds", ""));

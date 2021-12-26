@@ -1,0 +1,10 @@
+{
+	"eggMsgCD": 5,
+	"eggChance": 0.10,
+	"fishCD": 3,
+	"fishChance": 0.3,
+	"chestChance": 0.025,
+	"artifactChance": 0.002, 
+	"brewExpiry": 1800000,
+    "plantDeathTime": 259200000
+}

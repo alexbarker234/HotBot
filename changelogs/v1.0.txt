@@ -1,0 +1,17 @@
+
+`garden`
+    - plants now die after 3 days without water
+    - an alert is sent when plants die, run out of water or are fully grown
+`butterflies`
+    - now drop butterfly dust which can be sold for flarins
+    - no longer drops Searcap Seeds
+`settings`
+    - notifications - turn on or off notifications
+    - dehydration notifications
+    - wither notifications
+    - growth ntifications
+`technical`
+    - reworked user query code
+    - reworked weather code
+    - reworked egg reward code
+    - added 3 new stats - chestRewardScale, butterflyRewardScale & eggChanceScale

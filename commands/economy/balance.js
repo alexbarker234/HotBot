@@ -8,13 +8,10 @@ module.exports = {
     usage: "%PREFIX%balance\n"
         + "%PREFIX%balance top",
     alt: 'flarins',
-    async execute(client, message, args, Discord){  
+    async execute(client, message, args, user, userStats){  
         let flarinEmoji = functions.getEmojiFromName(client, "flarin");
 
         if (args[0] != "top") {
-            let user = await functions.getUser( message.author.id, message.guild.id);
-            if (!user) return message.channel.send("can't find profile");
-
             const embed = new MessageEmbed()
                 .setColor('#63eb65')
                 .setTitle(message.author.username + "'s balance")

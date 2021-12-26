@@ -3,7 +3,7 @@ module.exports = {
     description: 'ping the bot. may bite',
     usage: "%PREFIX%ping",
     hidden: true,
-    execute(client, message, args, Discord){
+    execute(client, message, args, user, userStats){
         message.channel.send('heyya cutie :)');
         console.log("someone pinged me");
     }

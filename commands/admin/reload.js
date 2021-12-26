@@ -6,7 +6,7 @@ module.exports = {
     description: 'reload all commands',
     usage: "%PREFIX%reload",
     admin: true,
-    async execute(client, message, args, Discord){
+    async execute(client, message, args, user, userStats){
         const handlers = fs.readdirSync(`${global.appRoot}/handlers`).filter(file => file.endsWith('.js'));
         for (handler of handlers)
             if(handler != "eventHandler.js") 

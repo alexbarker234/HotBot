@@ -6,12 +6,5 @@ module.exports = {
     requirements: "Between 8am-8pm. More common during rain",
     price: 0,
     hatchTime: 3 * 60 * 60 * 1000,
-    rarity(user){ 
-        if (functions.isRaining(user)) return 0.8;
-        return 0.4; 
-    }, 
-    available(user) {
-        const time = new Date().addHours(8);
-        return time.getHours() >= 8 && time.getHours() < 20;
-    }
+    weight: (client, user) => Date.nowWA().betweenHours(8,20) ? (functions.isRaining(client, user) ? 0.8 : 0.4) : 0
 }

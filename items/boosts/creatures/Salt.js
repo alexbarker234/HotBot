@@ -6,5 +6,6 @@ module.exports = {
     duration: 6 * 60 * 60 * 1000,
     cantSell: true,
     updateStats(statObject) { 
+        statObject.eggWeightScales.set("Bleap", 0.5);
     }
 }

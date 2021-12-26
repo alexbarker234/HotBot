@@ -7,7 +7,7 @@ module.exports = {
     description: 'add to the todo list',
     usage: "%PREFIX%butterflytest",
     admin: true,
-    async execute(client, message, args, Discord){
+    async execute(client, message, args, user, userStats){
         tFunctions.spawnButterfly(client, message.channel);
     }
 }   

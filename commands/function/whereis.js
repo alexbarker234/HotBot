@@ -6,7 +6,7 @@ module.exports = {
     description: 'find the hotties',
     usage: "%PREFIX%whereis [name] <day> <time>",
     hidden: true,
-    execute(client, message, args, Discord){       
+    execute(client, message, args, user, userStats){       
         var toPrint = '';
 
         for (let i = 0; i <= args.length; i++) if(args[i]) args[i] = args[i].toLowerCase();

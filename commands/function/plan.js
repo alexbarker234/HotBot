@@ -10,8 +10,7 @@ module.exports = {
     description: 'create a plan',
     usage: "%PREFIX%plan create [date] [description]\n"
     + "%PREFIX%plan edit [id] [date] [description]",
-    universal: true,
-    async execute(client, message, args, Discord){
+    async execute(client, message, args, user, userStats){
         
         if (!args[0] || !args[1] || !args[2]) return message.channel.send("**correct usage: **\n" + this.usage);
 

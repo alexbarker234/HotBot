@@ -2,7 +2,7 @@ const fs = require('fs');
 
 module.exports = (client, Discord) =>{
     // bruh
-    let itemsNormal = ["bait", "plants", "seeds", "potions"]; // need a better way to do this, recursion perhaps?
+    let itemsNormal = ["bait", "plants", "seeds", "potions", "misc"]; // need a better way to do this, recursion perhaps?
     // define things
     client.items = [];
 

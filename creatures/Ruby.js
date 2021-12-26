@@ -4,9 +4,8 @@ module.exports = {
     requirements: "Monday, Wednesday, Friday, Saturday, Sunday",
     price: 0,
     hatchTime: 5 * 60 * 60 * 1000,
-    rarity(user){ return 0.5 }, 
-    available(user) {
-        const time = new Date().addHours(8);
-        return time.getDay() % 2 != 0 || time.getDay() >= 5;
+    weight: (client, user) => {
+        const time = Date.nowWA();
+        return (time.getDay() % 2 != 0 || time.getDay() >= 5) ? 0.5 : 0;
     }
 }

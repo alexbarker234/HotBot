@@ -10,10 +10,7 @@ module.exports = {
     usage: "!inventory\n"
         + "!inventory <item>",
     alt: 'item',
-    async execute(client, message, args, Discord){          
-        let user = await functions.getUser(message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
+    async execute(client, message, args, user, userStats){          
         if (args[0]) {
             let flarinEmoji = functions.getEmojiFromName(client, "flarin");
 

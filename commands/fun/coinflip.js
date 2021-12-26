@@ -2,7 +2,7 @@ module.exports = {
     name: 'coinflip',
     description: 'flip a coin.',
     usage: "%PREFIX%coinflip <guess>",
-    execute(client, message, args, Discord){
+    execute(client, message, args, user, userStats){
 
         let flip = Math.floor(Math.random() * 2) == 0 ? "heads" : "tails";
 

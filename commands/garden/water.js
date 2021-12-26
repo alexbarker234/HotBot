@@ -7,13 +7,8 @@ module.exports = {
     name: 'water',
     description: 'water a plant',
     usage: `%PREFIX%water <plot>`,
-    async execute(client, message, args, Discord){
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
- 
+    async execute(client, message, args, user, userStats){
         gardenFunctions.fixDefaultGarden(user);
-
-        const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
 
         let plot = parseInt(args[0]);
         if (isNaN(plot)) return message.channel.send("huh thats not a number");
@@ -26,6 +21,7 @@ module.exports = {
         await gardenFunctions.updatePlantWater(client, user, plant);
 
         plant.lastWatered = new Date();
+        plant.sentWaterNotif = false;
 
         user.save();    
 

@@ -6,10 +6,7 @@ module.exports = {
     name: 'buy',
     description: 'purchase an item from the store',
     usage: "%PREFIX%buy <item name> <amount>",
-    async execute(client, message, args, Discord){ 
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
+    async execute(client, message, args, user, userStats){ 
         if (!args[0]) return message.channel.send("**correct usage: **\n" + this.usage);
 
         let itemName = args[0];

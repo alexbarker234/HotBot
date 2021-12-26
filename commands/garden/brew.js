@@ -12,10 +12,7 @@ module.exports = {
     description: 'brew a potion',
     usage: "%PREFIX%brew add <amount> <plant>\n"
         + "%PREFIX%brew heat/stir/beat/fold",
-    async execute(client, message, args, Discord){
-        let user = await functions.getUser(message.author.id, message.guild.id);
-        if (!user) return message.channel.send("error getting profile :(");
-
+    async execute(client, message, args, user, userStats){
         if (!functions.userHasUpgrade(user, "Cauldron")) 
             return message.channel.send("you have no cauldron to brew in! buy one from the shop")
 

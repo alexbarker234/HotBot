@@ -10,7 +10,7 @@ module.exports = {
     name: 'hotness',
     description: 'get your daily hotness',
     usage: "!hotness <previous date>",
-    execute(client, message, args, Discord){  
+    execute(client, message, args, user, userStats){  
         if (Math.floor(Math.random() * 10) == 0 && !args[0]) {
             switch(Math.floor(Math.random() * 3)) {
                 case 0:

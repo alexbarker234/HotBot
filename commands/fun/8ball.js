@@ -2,7 +2,7 @@ module.exports = {
     name: '8ball',
     description: 'ask the magic 8 ball',
     usage: "%PREFIX%8ball",
-    execute(client, message, args, Discord){
+    execute(client, message, args, user, userStats){
         let response = "";
         if (Math.floor(Math.random() * 100 == 0)) return message.channel.send("why do you put your life to chance?")
 

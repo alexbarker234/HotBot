@@ -3,17 +3,18 @@ const { MessageEmbed,MessageButton, MessageActionRow, MessageSelectMenu  } = req
 const functions = require('../../functions.js')
 
 let settingsMap = new Map();
+settingsMap.set("notifs", {display: "Notifications", description: "Toggle HotBot sending any notifications"})
 settingsMap.set("eggNotifs", {display: "Egg Notifications", description: "Toggle HotBot alerting you when one of your egg hatches"})
+settingsMap.set("waterNotifs", {display: "Dehydration Notifications", description: "Toggle HotBot alerting you when your plants are dehydrated"})
+settingsMap.set("witherNotifs", {display: "Wither Notifications", description: "Toggle HotBot alerting you when one of your plants withers"})
+settingsMap.set("growthNotifs", {display: "Growth Notifications", description: "Toggle HotBot alerting you when one of your plants grows"})
 settingsMap.set("nightNotifs", {display: "Night Notifications", description: "Toggle whether HotBot alerts you at night time"})
 
 module.exports = {
     name: 'settings',
     description: 'view/change your user settings',
     usage: "%PREFIX%settings <setting>",
-    async execute(client, message, args, Discord){       
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-        
+    async execute(client, message, args, user, userStats){       
         let settingInput = args.join(' ').toCaps();
         if (args[0]) {
             let settingName;

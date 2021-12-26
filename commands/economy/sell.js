@@ -8,10 +8,7 @@ module.exports = {
     description: 'sell items',
     usage: "%PREFIX%sell <item name> [amount]\n"
         + "%PREFIX%sell fish",
-    async execute(client, message, args, Discord){  
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-        
+    async execute(client, message, args, user, userStats){  
         let flarinEmoji = functions.getEmojiFromName(client, "flarin");
 
         if (!args[0]) {
@@ -76,7 +73,7 @@ module.exports = {
             if (!itemData.cantBuy && !itemData.fish) discount *= 0.8;
             if (itemData.sellScale) discount *= itemData.sellScale;
 
-            let value = itemData.price * amount * discount;
+            let value = Math.floor(itemData.price * amount * discount);
             user.flarins += value;
 
             functions.removeThingFromUser(itemArray, item.name, amount)

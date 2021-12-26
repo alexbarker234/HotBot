@@ -7,19 +7,19 @@ module.exports = {
     description: 'view your stats',
     usage:  `!stats
             "!stats detailed`,
-    async execute(client, message, args, Discord){  
-        const userStats = await f.getUserStats(client, message.author.id, message.guild.id);
-
+    async execute(client, message, args, user, userStats){  
         if (args[0] != "detailed") {
             let statList = `**egg chance:** ${f.fixFPErrors(userStats.eggChance * 100)}%\n` +
                             `**egg message cooldown:** ${userStats.eggCD}m\n`+
                             `**egg slots:** ${userStats.eggSlots}\n`+
                             `**egg hatch speed:** ${f.fixFPErrors(userStats.eggHatchSpeed * 100)}%\n`+
+
                             `**fish chance:** ${f.fixFPErrors(userStats.fishChance * 100)}%\n`+
                             `**bonus fish chance:** ${f.fixFPErrors(userStats.bonusFishChance * 100)}%\n`+
                             `**rare fish influence:** ${f.fixFPErrors(userStats.rareFishScale * 100)}%\n`+
                             `**chest fish chance:** ${f.fixFPErrors(userStats.chestChance * 100)}%\n`+
                             `**artifact fish chance:** ${f.fixFPErrors(userStats.artifactChance * 100)}%\n`+
+                            
                             `**garden plots:** ${userStats.gardenPlots}\n`+
                             `**garden water need:** ${f.fixFPErrors(userStats.gardenWaterNeed * 100)}%\n`+
                             `**garden growth rate:** ${f.fixFPErrors(userStats.gardenGrowthRate* 100)}%\n`

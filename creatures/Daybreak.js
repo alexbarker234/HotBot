@@ -4,9 +4,5 @@ module.exports = {
     requirements: "Between 4am and 7am",
     price: 0,
     hatchTime: 12 * 60 * 60 * 1000,
-    rarity(user){ return 0.15}, 
-    available(user) {
-        const time = new Date().addHours(8);
-        return time.getHours() >= 4 && time.getHours() < 7;
-    }
+    weight: (client, user) => Date.nowWA().betweenHours(4, 7) ? 0.15 : 0
 }

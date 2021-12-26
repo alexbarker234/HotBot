@@ -8,8 +8,7 @@ module.exports = {
     name: 'help',
     description: 'get help!',
     usage: `%PREFIX%help <command>`,
-    universal: true,
-    execute(client, message, args, Discord) {
+    execute(client, message, args, user, userStats) {
         let prefix = functions.getPrefix(client, message.guildId);
 
         if (args[0]) {
@@ -45,7 +44,7 @@ module.exports = {
             commandTypes.forEach(cmdType => {
                 let cmdHelp = "";
                 client.commands.forEach((command, key) => {
-                    if (!command.admin && !command.hidden && command.alt != key && command.type == cmdType && (command.universal || config.fullAccess.includes(message.guild.id)))
+                    if (!command.admin && !command.hidden && command.alt != key && command.type == cmdType)
                         cmdHelp += `**[${command.name}](https://www.google.com "${command.description}\n\nusage:\n${command.usage.replaceAll("%PREFIX%", prefix)}")**\n`;              
                 });
                 if (cmdHelp != "") embed.addField(`${titleEmojis.get(cmdType)}${cmdType}`, cmdHelp, true)

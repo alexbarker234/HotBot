@@ -10,7 +10,7 @@ module.exports = {
     + "%PREFIX%trade add [message id] [side] [creature name] [count]\n"
     + "%PREFIX%trade remove [message id] [side] [creature name] [count]\n"
     + "%PREFIX%trade accept/reject [message id/all]",
-    async execute(client, message, args, Discord){
+    async execute(client, message, args, user, userStats){
         if (args[0] == "create"){
             const recieverID =  args[1].replace(/[\\<>@#&!]/g, "");
 

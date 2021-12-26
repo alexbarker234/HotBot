@@ -4,12 +4,5 @@ module.exports = {
     requirements: "None.",
     price: 0,
     hatchTime: 8 * 60 * 60 * 1000,
-    rarity(user) {
-        const time = new Date().addHours(8);
-        ///if (time.getDate() == 7 && time.getMonth() == 4) return 1;
-        return 0.2;
-    }, 
-    available(user) { return true; }
+    weight: (client, user) => 0.2
 }
-// stop simping, bitch
-/* Gobbies have a festival once a year on April 7th, in which they come to the land in abundance and celebrate by playing large football games with bleaps. */

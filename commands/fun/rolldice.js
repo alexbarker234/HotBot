@@ -1,3 +1,5 @@
+const { MessageCollector } = require('discord.js');
+
 module.exports = {
     name: 'rolldice',
     description: 'roll a dice. default is 6',
@@ -6,7 +8,7 @@ module.exports = {
     + '%PREFIX%rolldice <guess> <sides> <count>\n'
     + 'you can also switch up argument order by doing arg:x - for example !rolldice count:2 will role 2 six sided die',
     alt: 'rolldie',
-    execute(client, message, args, Discord){
+    execute(client, message, args, user, userStats){
 
         //if (message.author.id == "799878556368896030") return message.channel.send("you arent allowed to win");
         let guess;
@@ -61,7 +63,7 @@ module.exports = {
         if (sides > 1000) {
             const filter = m => m.author.id == message.author.id;
 
-            const collector = new Discord.MessageCollector(message.channel, filter, {
+            const collector = new MessageCollector(message.channel, filter, {
                 max: 1,
                 time: 15 * 1000, // 15s
             });

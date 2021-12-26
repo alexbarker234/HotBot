@@ -1,12 +1,12 @@
 const creatureUserModel = require('../../models/creatureUserSchema');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageAttachment } = require('discord.js');
 const functions = require('../../functions.js')
 
 module.exports = {
     name: 'creaturestats',
     description: 'get an overview of how many creatures the server has',
     usage: "%PREFIX%creaturestats <creature>",
-    async execute(client, message, args, Discord){
+    async execute(client, message, args, user, userStats){
         // for creature specific stats
         if (args[0]) {
             // capitalise first char
@@ -62,7 +62,7 @@ module.exports = {
             if (total == 0) return message.channel.send("no one has found this creature yet")
 
             const creatureFile = client.creatures.get(args[0]);
-            const creatureImage = new Discord.MessageAttachment(`./creatures/images/${creatureFile.name}.png`, 'creature.png');
+            const creatureImage = new MessageAttachment(`./assets/creatures/${creatureFile.name}.png`, 'creature.png');
 
             args[0] = args[0].toLowerCase();
             if (creatures == "") creatures = "nothing";

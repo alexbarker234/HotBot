@@ -1,14 +1,9 @@
 const { MessageEmbed } = require('discord.js');
-var fs = require('fs');
 const creatureUserModel = require('./models/creatureUserSchema');
 const guildSettingsModel = require('./models/guildSettingsSchema');
 const warehouses = ['907483410258337803','907492571503292457', '862206016510361600', '917654307648708609']
 const config = require("./config.json");
 const seedrandom = require('seedrandom');
-const weather = require("./weatherCache.json");
-const creatureFunctions = require("./creatureFunctions.js");
-const gardenFunctions = require("./gardenFunctions.js");
-
 
 exports.getUser = async (userID, guildID) => {
     let user;
@@ -68,18 +63,27 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
         eggCD: config.eggMsgCD, eggCDText: `Base ${config.eggMsgCD} minutes\n`,
         eggSlots: 3, eggSlotsText: "Base 3\n",
         eggHatchSpeed: 1, eggHatchSpeedText: "Base 100%\n",
+
+        eggWeightScales: new Map(), eggWeightScalesText: "Base 100%\n",
+
         fishChance: config.fishChance, fishChanceText: `Base ${config.fishChance * 100}%\n`,
         bonusFishChance: 0, bonusFishChanceText: `Base 0%\n`,
         rareFishScale: 0, rareFishScaleText: `Base 0%\n`,
         chestChance: config.chestChance, chestChanceText: `Base ${config.chestChance * 100}%\n`,
         artifactChance: config.artifactChance, artifactChanceText: `Base ${config.artifactChance * 100}%\n`,
+        chestMultiplier: 1, chestMultiplierText: `Base 100%\n`,
+
+        butterflyMultiplier: 1, butterflyMultiplierText: `Base 100%\n`,
+
         gardenPlots: 2, gardenPlotsText: `Base 3\n`,
         gardenGrowthRate: 1, gardenGrowthRateText: `Base 100%\n`,
         gardenWaterNeed: 1, gardenWaterNeedText: `Base 100%\n`
     };
 
     if (userID == '283182274474672128') {
-        //statObject.chestChance = 0.7;
+        /*statObject.chestChance = 0.7;
+        statObject.eggCD = 0;
+        statObject.eggChance = 1;*/
     }
 
     const filter = { userID: userID, guildID: guildID }
@@ -155,25 +159,42 @@ var userHasUpgrade = exports.userHasUpgrade = (user, upgradeName) => {
     return false;
 }
 
-exports.chooseButterflyRewards = (client, user, addToUser) => {
+var weightScale = exports.weightScale = (map, influence) => {
+    let weightSum = 0;
+    for (const [key, value] of map) weightSum += value;
+    averageWeight = weightSum / map.size;
+
+    let scaledWeighting = new Map()
+    for (const [key, value] of map) {
+        scaledWeighting.set(key, value + (averageWeight - value) * influence)
+    }
+    return scaledWeighting;
+}
+
+exports.chooseButterflyRewards = async (client, user, addToUser) => {
+    const userStats = await getUserStats(client, user.userID, user.guildID);
+
     if (addToUser === undefined) addToUser = true;
     let itemRewards = [];
-    let flarinReward = 0;
 
     seeds = new Map();
-    seeds.set("Searcap Seeds", 0.6);
     seeds.set("Gasbloom Seeds", 0.5);
     seeds.set("Sparklethorn Seeds", 0.4);
     seeds.set("Ashdrake Seeds", 0.3);
+    seeds = weightScale(seeds, userStats.butterflyMultiplier - 1)
 
     baitOptions = new Map();
     baitOptions.set("Orbide", 0.8);
     baitOptions.set("Flareworm", 0.6);
     baitOptions.set("Bloodleech", 0.3);
+    baitOptions = weightScale(baitOptions, userStats.butterflyMultiplier - 1)
 
-    let numRewards = Math.floor(Math.biasedRand(2, 5, 1.3, 2)) // 2-4 rewards, more likely to get less
+    let min = 2;
+    let max = 6;
+    let target = min + ((max- min) * (userStats.butterflyMultiplier- 1))
+    let numRewards = Math.floor(Math.biasedRand(min, max, 1.3, target)) // 2-5 rewards, more likely to get less    
     for (let i = 0; i < numRewards; i++) {
-        let rand = Math.floor(Math.random() * 3);
+        let rand = Math.floor(Math.random() * 2);
         if (rand == 0) {
             let seedChoice = pickFromWeightedMap(seeds);
             if (!client.seeds.get(seedChoice)) { console.log(`butterfly seed ${seedChoice} doesnt exist`); continue; }
@@ -189,18 +210,19 @@ exports.chooseButterflyRewards = (client, user, addToUser) => {
             addThingToUser(itemRewards, baitChoice, baitNum)
             if (addToUser) addThingToUser(user.inventory.bait, baitChoice, baitNum);
         }
-        else if (rand == 2){
-            flarinReward += Math.floor(Math.biasedRand(10,500,50,1.5));
-            if (addToUser) user.flarins += flarinReward;
-        }
     }
-    return { itemRewards: itemRewards, flarinReward: flarinReward};
+
+    let dustReward = Math.floor(Math.biasedRand(1,50,10,1.5));
+    addThingToUser(itemRewards, "Butterfly Dust", dustReward);
+    if (addToUser) addThingToUser(user.inventory.misc, "Butterfly Dust", dustReward);
+
+    return { itemRewards: itemRewards};
 }
 
-exports.isRaining = (user) => {
+exports.isRaining = (client, user) => {
     let rainCaster = false;
     if (user) rainCaster = userHasBoost(user, "Raincaster");
-    return weather.weather == "Rain" || weather.weather == "Drizzle" || rainCaster;
+    return client.weatherCache.weather == "Rain" || client.weatherCache.weather == "Drizzle" || rainCaster;
 }
 
 exports.getUpgradeCount = (user, upgradeName) => {
@@ -331,25 +353,6 @@ var addThingToUser = exports.addThingToUser = (thingArray, thingName, count) => 
     else thingArray[thingIndex].count += count; 
 }
 
-var addThingToUser = exports.addThingToUser = (thingArray, thingName, count) => {
-    count = parseInt(count);
-    // check if user has thing
-    let thingIndex = -1;
-    for (let i = 0; i < thingArray.length; i++){
-        if (thingArray[i].name == thingName){
-            thingIndex = i;
-            break;
-        }
-    }
-    // add thing to array
-    if (thingIndex == -1) {
-        const thingData = { name : thingName, count : count }
-        thingArray.push(thingData);
-    }
-    // add 1 to thing count
-    else thingArray[thingIndex].count += count; 
-}
-
 var removeThingFromUser = exports.removeThingFromUser = (thingArray, thingName, count) => {
     // check if user has thing
     let thingIndex = -1;
@@ -381,9 +384,6 @@ var sendAlert = exports.sendAlert = async (client, alertContent, guildID) => {
         else console.error("cant find channel");
     }
 }
-var saveUser = exports.saveUser = (user) => {
-    creatureUserModel.replaceOne({userID: user.userID, guildID: user.guildID}, user)
-}
 
 exports.getPrefix = (client, guildID) => {
     let prefixCustom = client.prefixes.get(guildID)         
@@ -412,6 +412,7 @@ exports.getMoonPhase = (year, month, day) => {
     if (b >= 8) b = 0; // 0 and 8 are the same so turn 8 into 0
     return {phase: b, name: phases[b]};
 }
+
 exports.fixFPErrors = (val) => {
     return parseFloat(val.toFixed(4));
 }
@@ -441,6 +442,10 @@ String.prototype.toCaps = function() {
     }
 
     return this.split(' ').map(capitalize).join(' ');
+}
+
+Date.nowWA = function() {
+    return new Date((new Date().getTime() + new Date().getTimezoneOffset() + 480));
 }
 
 Date.parseWADate= function(date){
@@ -486,6 +491,11 @@ Date.prototype.addHours= function(h){
     this.setHours(this.getHours()+h);
     return this;
 }
+ // 23 - 1
+Date.prototype.betweenHours= function(min, max) {
+    if (min > max) return this.getHours() >= min || this.getHours() < max;
+    return this.getHours() >= min && this.getHours() < max;
+}
 
 // sorts by value not key
 Map.prototype.sortMap = function() {
@@ -496,65 +506,3 @@ Map.prototype.sortMap = function() {
 Map.prototype.sortMapObject = function(byField) {
     return new Map([...this.entries()].sort((a, b) => b[1][byField] - a[1][byField]));
 }
-
-/*function getNameList(reaction, emoji){ 
-    let list = '';
-    console.log(emoji);
-    reaction.message.reactions.cache.forEach(react => {   // for each reaction on the message which got the reaction
-        react.users.fetch().then((usermap) => {                 // get the collection of users
-            usermap.each(user => {                              // for each user in the collection
-                console.log(react.emoji.name);
-                if (!user.bot && react.emoji.name == emoji) list += user.username 
-            });
-        });
-    }); 
-    console.log("LIST: " + list);
-    return new Promise(list);
-}*/
-
-// problem with returning before setting temp value. im dumb
-/*
-async function getTemp() {
-    var temp = -999;
-    const url = 'http://api.openweathermap.org/data/2.5/weather?q=Perth&appid=' + process.env['WEATHERTOKEN'];
-    await request(url, function(err, response, body) {
-        // On return, check the json data fetched
-        if (err) {
-            console.log(err)
-        } else {
-            let weather = JSON.parse(body);
-            if (weather.main == undefined) console.log("error getting weather")
-            else temp = weather.main.temp - 273.15;  
-        }
-    });
-    return temp;
-}*/
-
-/*async function logCreatureGame (toLog) {
-    var dt =  (new Date()).addHours(8);
-    var dateString = dt.getDate() + "/" + dt.getMonth() + "/" + dt.getFullYear() + " " + dt.getHours() + ":" + ('0'+dt.getMinutes()).slice(-2); // minutes is just adding 0 to the end and cutting it off if its 3 digits
-    let line = dateString + ": " + toLog + "\n";
-    
-    fs.appendFile('creatureLog.txt', line, function (err) {
-        if (err) throw err;
-    });
-}*/
-
-/*async function recordMessage (Discord, client, message) {
-    var dt =  message.createdAt.addHours(8);
-    var dateString = dt.getDate() + "/" + dt.getMonth() + "/" + dt.getFullYear() + " " + dt.getHours() + ":" + ('0'+dt.getMinutes()).slice(-2); // minutes is just adding 0 to the end and cutting it off if its 3 digits
-    let line = dateString + " " + message.author.username + ": " + message.content + "\n";
-    
-    //create file if it doesnt exist
-
-    var dir = 'msgLog/' + message.guild.name;
-    var fileName = message.channel.name + '.txt'
-
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
-    }
-
-    fs.appendFile(dir + '/' + fileName, line, function (err) {
-        if (err) throw err;
-    });
-}*/

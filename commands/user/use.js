@@ -5,10 +5,7 @@ module.exports = {
     name: 'use',
     description: 'use an item',
     usage: "!use <item>",
-    async execute(client, message, args, Discord){          
-        let user = await functions.getUser(message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
+    async execute(client, message, args, user, userStats){          
         let itemName = args.join(' ');
 
         let itemToUse;

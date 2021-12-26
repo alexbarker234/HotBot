@@ -6,10 +6,7 @@ module.exports = {
     name: 'bestiary',
     description: 'see all the available creatures',
     usage: "%PREFIX%bestiary",
-    async execute(client, message, args, Discord){          
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-        
+    async execute(client, message, args, user, userStats){                  
         let creatureText = [""];
         let textIndex = 0;
         let creaturesGot = [];
@@ -26,7 +23,8 @@ module.exports = {
             let emoji = functions.getEmojiFromName(client, emojiName);
             if (!emoji) emoji = '❌';
 
-            let availableEmoji = c.available(user) ? functions.getEmojiFromName(client, "check") : '❌';
+            let available = c.weight(client, user) != 0;
+            let availableEmoji = available ? functions.getEmojiFromName(client, "check") : '❌';
             let line = `${emoji}` + `${availableEmoji}` + " **" + creatureName + "**: " + c.requirements + "\n";
             // fields cant be longer than 1024
             if ((creatureText[textIndex] + line).length > 1024) {

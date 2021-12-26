@@ -1,6 +1,5 @@
 const gardenFunctions = require("./gardenFunctions.js");
-const request = require("request");
-const weatherCache = require("./weatherCache.json")
+const fetch = require('node-fetch');
 const fs = require('fs');
 const creatureUserModel = require('./models/creatureUserSchema');
 const guildSettingsModel = require('./models/guildSettingsSchema');
@@ -15,19 +14,19 @@ const links = ["https://imgur.com/YtUQWSY.png", "https://imgur.com/oNlXH3Z.png",
 // MAIN TIMERS
 
 exports.runTimer = async (client) => {
-    updateWeatherCache();
+    updateWeatherCache(client);
 
     let seconds = 0;
     let repeatDelay = 20; // in seconds
     setInterval(async function() { 
         seconds += repeatDelay;
-
+        
         // every minute
         if (seconds % 60 == 0) {
         }
         // every 5 minutes
         if (seconds % 300 == 0) {
-            updateWeatherCache();
+            updateWeatherCache(client);
             await butterflyCheck(client);
         }
 
@@ -41,7 +40,7 @@ exports.runTimer = async (client) => {
                 await clearOldBrews(client, user);
                 // every minute
                 if (seconds % 60 == 0) {
-                    await updateGardenWater(client, user);
+                    await updateGarden(client, user);
                 }
                 // every 5 minutes
                 if (seconds % 300 == 0) {
@@ -122,7 +121,7 @@ var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
         let user = await functions.getUser( i.user.id, i.guildId);
         if (!user) return console.error("couldnt find profile for butterfly catch");      
                 
-        let rewards = functions.chooseButterflyRewards(client,user,true)
+        let rewards = await functions.chooseButterflyRewards(client,user,true)
 
         let rewardString = "";
         for (item of rewards.itemRewards) {
@@ -130,11 +129,11 @@ var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
             if (emoji == '❌') emoji = '';
             rewardString += `${emoji}${item.name} **x${item.count}**\n`;
         }
-        if (rewards.flarinReward > 0) { 
-            let flarinEmoji = functions.getEmojiFromName(client, "flarin");
-            rewardString += `${rewards.flarinReward}${flarinEmoji}\n`;
+        if (rewards.dustReward > 0) { 
+            let emoji = functions.getEmojiFromName(client, "ButterflyDust");
+            rewardString += `${emoji}Butterfly Dust **x${rewards.dustReward}**\n`;
         }
-
+        user.stats.butterfliesCaught++;
         const embed = new MessageEmbed()
             .setColor('#69c765')
             .setTitle("you caught a butterfly!")
@@ -161,7 +160,7 @@ async function checkEggHatching(client, user){
             functions.addThingToUser(user.creatures, egg.name,1);
 
             // send notification if enabled
-            const time = new Date().addHours(8);
+            const time = Date.nowWA();
             if (user.settings.eggNotifs && ((time.getHours() >= 21 || time.getHours() <= 7) || user.settings.nightNotifs)) 
                 functions.sendAlert(client, `<@!${user.userID}>! your ${egg.name} has hatched!`, user.guildID) 
             
@@ -190,33 +189,47 @@ function clearOldBrews(client, user) {
 
 // garden
 
-async function updateGardenWater(client, user) {
+async function updateGarden(client, user) {
+    let waterAlertedAlready = false;
+    let waterAlert = false;
+    let grownAlertedAlready = false;
+    let grownAlert = false;
+    const userStats = await functions.getUserStats(client, user.userID, user.guildID);
     for (const plant of user.garden.plants) {
-    //for (let i = 0; i < user.garden.plants.length; i++) {
         if (plant.name == "none") continue;
-        await gardenFunctions.updatePlantWater(client, user, plant);       
+        let plantData = client.plants.get(plant.name);
+
+        // dont send notif if already sent before
+        if (plant.sentWaterNotif) waterAlertedAlready = true; 
+        if (plant.sentWaterNotif) grownAlertedAlready = true; 
+
+        // update
+        await gardenFunctions.updatePlantWater(client, user, plant);   
+        if (plant.name == "none") continue; // if it dies
+
+        if (gardenFunctions.calculateWaterPercent(plant,userStats, plantData) == 0 && !plant.sentWaterNotif) {
+            plant.sentWaterNotif = true;
+            waterAlert = true;
+        }
+        if (gardenFunctions.calculateGrowthPercent(plant,userStats, plantData) == 1 && !plant.sentGrownNotif) {
+            plant.sentGrownNotif = true;
+            grownAlert = true;
+        }
     }
+    if (waterAlert && !waterAlertedAlready && user.settings.notifs && user.settings.waterNotifs) functions.sendAlert(client, `<@!${user.userID}>! your plants are dehydrated!`, user.guildID) 
+    if (grownAlert && !grownAlertedAlready && user.settings.notifs && user.settings.growthNotifs) functions.sendAlert(client, `<@!${user.userID}>! your plants are grown!`, user.guildID) 
 }
 
 // weather
-
-function updateWeatherCache() { 
+async function updateWeatherCache(client) {
     const url = 'http://api.openweathermap.org/data/2.5/weather?q=Perth&appid=' + process.env['WEATHERTOKEN'];
-    request(url, function(err, response, body) {
-        // On return, check the json data fetched
-        if (err) {
-            console.log(err)
-        } else {
-            let weather = JSON.parse(body);
-            if (weather.main == undefined) console.log("error getting weather")
-            else {
-                //console.log(weather);
-                weatherCache.weather = weather.weather[0].main;  
-                weatherCache.temperature = weather.main.temp - 273.15;  
-                weatherCache.windspd = weather.wind.speed;  
-                weatherCache.clouds = weather.clouds.all;  
-                fs.writeFileSync("./weatherCache.json", JSON.stringify(weatherCache));
-            }
-        }
-    });
+    let weather = await fetch(url)
+    let weatherJSON = await weather.json();
+    let weatherData = {
+        weather: weatherJSON.weather[0].main,
+        temperature: weatherJSON.main.temp - 273.15,
+        windspd: weatherJSON.wind.speed,
+        clouds: weatherJSON.clouds.all  
+    }
+    client.weatherCache = weatherData;
 }

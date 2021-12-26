@@ -33,7 +33,7 @@ module.exports = {
     name: 'guildsettings',
     description: 'view/change your guild settings',
     usage: "%PREFIX%guildsettings <setting> <value>",
-    async execute(client, message, args, Discord){       
+    async execute(client, message, args, user, userStats){       
         if(!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) 
             return message.channel.send("you arent an admin :(");
 
@@ -219,16 +219,3 @@ async function stringCollector(channel, setting, userID, guild) {
         settingsMsg.delete();
     }); 
 }
-/*
-const collector = new Discord.MessageCollector(message.channel, filter, {
-                max: 1,
-                time: 15 * 1000, // 15s
-            });
-            message.channel.send(`your ${plant.name} in plot ${plot + 1} is not ready to be harvested, are you sure?`);
-            
-            const yessir = ["yes", "yeah", "ye", "yea", "y"];
-
-            collector.on("collect", m => {
-                if (yessir.includes(m.content.toLowerCase())) harvestPlant(message, user,plantData, plot, false);    
-            });
-            */

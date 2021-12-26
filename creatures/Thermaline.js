@@ -1,5 +1,4 @@
 const functions = require('../functions.js')
-const weather = require("../weatherCache.json");
 
 module.exports = {
     name: "Thermaline",
@@ -7,8 +6,5 @@ module.exports = {
     requirements: "Raining and above 15C",
     price: 0,
     hatchTime: 6 * 60 * 60 * 1000,
-    rarity(user){ return 0.8 }, 
-    available(user) {
-        return (functions.isRaining(user)) && weather.temperature > 15;
-        }
+    weight: (client, user) => (functions.isRaining(client, user) && client.weatherCache.temperature > 15) ? 0.8 : 0
 }

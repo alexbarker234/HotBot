@@ -5,7 +5,7 @@ module.exports = {
     description: 'cipher text',
     usage: "%PREFIX%cipher <text>",
     admin: true,
-    async execute(client, message, args, Discord){  
+    async execute(client, message, args, user, userStats){  
         message.channel.send(functions.scrambleWord(args[0]));
     }
 }   

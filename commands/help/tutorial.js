@@ -7,7 +7,7 @@ module.exports = {
     name: 'tutorial',
     description: 'get a little tutorial on things',
     usage: "%PREFIX%tutorial <tutorial>",
-    execute(client, message, args, Discord) {
+    execute(client, message, args, user, userStats) {
         if (!args[0]) {         
             const embed = new MessageEmbed()
                 .setColor('#f0c862')

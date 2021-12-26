@@ -9,19 +9,14 @@ module.exports = {
     description: 'see what eggs you got',
     usage: "%PREFIX%eggs",
     alt: 'hatchery',
-    async execute(client, message, args, Discord){
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
-        const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
-
+    async execute(client, message, args, user, userStats){
         if (args[0] != "details") {
             if (user.eggs.length == 0) return message.channel.send("You have no eggs");
 
             for (let i = 0; i < user.eggs.length; i++) {
                 const egg = user.eggs[i];
                 const eggFile = client.creatures.get(egg.name);
-                const eggImage = new Discord.MessageAttachment(`./creatures/images/${eggFile.name}Egg.png`, 'egg.png');
+                const eggImage = new MessageAttachment(`./assets/creatures/${eggFile.name}Egg.png`, 'egg.png');
 
                 const speedScale = 1 - (userStats.eggHatchSpeed - 1);
                 const hatchTime = new Date((egg.hatchTime - ((new Date).getTime() - egg.obtained.getTime())) * speedScale).toCountdown();
@@ -56,7 +51,7 @@ module.exports = {
                 if (userStats.eggSlots < i) break;
                 context.drawImage(nestBack, offsets[i].x, offsets[i].y, 42, 28);
                 if (user.eggs[i]) {
-                    var eggTex = await Canvas.loadImage(`./creatures/images/${user.eggs[i].name}Egg.png`);
+                    var eggTex = await Canvas.loadImage(`./assets/creatures/${user.eggs[i].name}Egg.png`);
                     context.drawImage(eggTex,
                         0, 0, 
                         eggTex.naturalWidth, eggTex.naturalHeight - 4, 

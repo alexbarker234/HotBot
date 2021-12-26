@@ -11,10 +11,7 @@ module.exports = {
     description: `fish. has a ${config.fishCD} second cooldown`,
     usage: "%PREFIX%fish\n" +
             "%PREFIX%fish list",
-    async execute(client, message, args, Discord){  
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
+    async execute(client, message, args, user, userStats){  
         if (args[0] == "list") {
             let fishText = "";
             let fishValue = "";
@@ -63,12 +60,15 @@ module.exports = {
                     let emoji = functions.getEmojiFromName(client, caught);
                     caughtString += `${emoji}${caught}\n`;
                 }
+                user.stats.totalFish += caughtList.length;
+                user.stats.timesFished++;
+
                 //endcolor
                 
                 //color:#331818
                 // CHESTS
                 let chest;
-                if (Math.random() < userStats.chestChance) chest = fishFunctions.chooseChestRewards(client, user, true);
+                if (Math.random() < userStats.chestChance) chest = await fishFunctions.chooseChestRewards(client, user, true);
                 // manage chest rewards
 
                 let chestString = "";
@@ -82,8 +82,9 @@ module.exports = {
                         let flarinEmoji = functions.getEmojiFromName(client, "flarin");
                         chestString += `${chest.flarinReward}${flarinEmoji}\n`;
                     }
+                    user.stats.totalChests++;
                 }
-
+                
                 if (caughtString == "") caughtString = "nothing :(";
                 let bait = user.baitEquipped;
 

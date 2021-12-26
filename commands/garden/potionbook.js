@@ -9,7 +9,7 @@ module.exports = {
     name: 'potionbook',
     description: 'water a plant',
     usage: "%PREFIX%potionbook page",
-    async execute(client, message, args, Discord){
+    async execute(client, message, args, user, userStats){
         let potionsPerPage = 2;
         let potionNum = 0;
         let potions = []

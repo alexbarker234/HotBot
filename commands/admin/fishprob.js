@@ -6,7 +6,7 @@ module.exports = {
     description: 'see the fish probability',
     usage: "%PREFIX%fishprob <test probability Y/N>",
     admin: true,
-    execute(client, message, args, Discord){
+    execute(client, message, args, user, userStats){
         let fishText = ""
         let total = 0;
         for (const [name, fish] of client.fish) {

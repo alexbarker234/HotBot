@@ -5,10 +5,7 @@ module.exports = {
     name: 'bait',
     description: `change the bait you are currently using`,
     usage: "%PREFIX%bait <name>\n%PREFIX%bait none",
-    async execute(client, message, args, Discord){  
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
+    async execute(client, message, args, user, userStats){  
         if (args[0]) {
             if (args[0] != "none") args[0] = args[0].toCaps();
             if (!client.bait.get(args[0]) && args[0] != "none") return message.channel.send("that bait doesnt exist!")

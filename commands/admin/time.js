@@ -5,8 +5,8 @@ module.exports = {
     description: 'check internal time',
     usage: "%PREFIX%time",
     admin: true,
-    execute(client, message, args, Discord){
-        const time = new Date().addHours(8);
+    execute(client, message, args, user, userStats){
+        const time = Date.nowWA();
         message.channel.send(
             "time: " + time.getHours() + ":" + time.getMinutes() + "\n" +
             "date: " + time.getDate() + "\n" +

@@ -1,16 +1,13 @@
 const creatureUserModel = require('../../models/creatureUserSchema');
 const functions = require('../../functions.js')
 const gardenFunctions = require('../../gardenFunctions.js')
+const { MessageCollector } = require('discord.js');
 
 module.exports = {
     name: 'harvest',
     description: 'harvest a crop!',
     usage: "%PREFIX%harvest <plot>",
-    async execute(client, message, args, Discord){
-       let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
-        const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
+    async execute(client, message, args, user, userStats){
         gardenFunctions.fixDefaultGarden(user);
 
         if (!args[0]) return message.channel.send("**correct usage: **\n" + this.usage);
@@ -26,7 +23,7 @@ module.exports = {
         let growthMultiplier = 1 - (userStats.gardenGrowthRate - 1);
         if ((Date.now() - plant.planted - plant.timeUnwatered) * growthMultiplier < plantData.growTime) {
             const filter = m => m.author.id == message.author.id;
-            const collector = new Discord.MessageCollector(message.channel, filter, {
+            const collector = new MessageCollector(message.channel, filter, {
                 max: 1,
                 time: 15 * 1000, // 15s
             });

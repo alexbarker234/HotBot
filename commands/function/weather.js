@@ -1,5 +1,4 @@
 const { MessageEmbed } = require('discord.js');
-const weather = require("../../weatherCache.json");
 const functions = require('../../functions.js')
 const creatureUserModel = require('../../models/creatureUserSchema');
 
@@ -7,12 +6,9 @@ module.exports = {
     name: 'weather',
     description: 'get the current weather. useful for finding specific eggs',
     usage: "%PREFIX%weather",
-    async execute(client, message, args, Discord){
-        const filter = { userID: message.author.id, guildID: message.guild.id }
-        let user = await creatureUserModel.findOne(filter);
-        if (!user) return message.channel.send("error getting profile :(");
-
-        const time = new Date().addHours(8);
+    async execute(client, message, args, user, userStats){
+        let weather = await functions.getWeather(client);
+        const time = Date.nowWA();
         const embed = new MessageEmbed()
                 .setColor('#f0c862')
                 .setTitle('current weather')

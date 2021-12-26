@@ -1,16 +1,13 @@
 const creatureUserModel = require('../../models/creatureUserSchema');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageAttachment } = require('discord.js');
 const functions = require('../../functions.js')
 
 module.exports = {
     name: 'creatures',
     description: 'see what creatures you got',
     usage: "%PREFIX%creatures <creature>",
-    async execute(client, message, args, Discord){     
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
-        if (user.creatures.length == 0) message.channel.send("you have no creatures");
+    async execute(client, message, args, user, userStats){     
+        if (user.creatures.length == 0) return message.channel.send("you have no creatures");
         
         if (args[0]) {
             let creature;
@@ -20,7 +17,7 @@ module.exports = {
             if (!creature) return message.channel.send("you dont own that creature");
 
             const creatureFile = client.creatures.get(creature.name);
-            const creatureImage = new Discord.MessageAttachment(`./creatures/images/${creatureFile.name}.png`, 'creature.png');
+            const creatureImage = new MessageAttachment(`./assets/creatures/${creatureFile.name}.png`, 'creature.png');
 
             const embed = new MessageEmbed()
                 .setColor('#f0c862')

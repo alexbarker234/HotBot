@@ -4,6 +4,5 @@ module.exports = {
     requirements: "None",
     price: 0,
     hatchTime: 2 * 60 * 60 * 1000,
-    rarity(user){ return 0.6 }, 
-    available(user) { return true }
+    weight: (client, user) => 0.6
 }
