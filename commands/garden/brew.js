@@ -11,13 +11,12 @@ module.exports = {
     name: 'brew',
     description: 'brew a potion',
     usage: "%PREFIX%brew add <amount> <plant>\n"
-        + "%PREFIX%brew heat/stir/beat/fold",
+        + "%PREFIX%brew heat/stir/beat/fold/mix",
     async execute(client, message, args, user, userStats){
         if (!functions.userHasUpgrade(user, "Cauldron")) 
             return message.channel.send("you have no cauldron to brew in! buy one from the shop")
 
         let actions = ['beat', 'stir', 'fold', 'mix']
-        let actionPast = ['beat', 'stirred', 'folded', 'mixed']
         let heatEmoji = ['🧊','🧊', '♨️', '♨️', '🔥', '🔥', '🏜️']
 
         if (!args[0]){
@@ -29,6 +28,7 @@ module.exports = {
                 else if (step == 'beat') stepInfo = `you beat the brew`
                 else if (step == 'stir') stepInfo = `you stirred the brew`
                 else if (step == 'fold') stepInfo = `you folded the brew`
+                else if (step == 'mix') stepInfo = `you mixed the brew`
                 else if (step.includes('add')) {
                     let bits = step.split(' ');
                     let itemName = bits[2];
@@ -149,6 +149,8 @@ module.exports = {
             if (args[0] == 'beat') stepInfo = `you beat the brew`
             else if (args[0] == 'stir') stepInfo = `you stirred the brew`
             else if (args[0] == 'fold') stepInfo = `you folded the brew`
+            else if (args[0] == 'mix') stepInfo = `you mixed the brew`
+            else stepInfo = "error";
             message.channel.send(stepInfo);
         } 
         else if (args[0] == "complete"){

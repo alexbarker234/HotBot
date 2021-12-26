@@ -8,14 +8,15 @@ module.exports = {
     usage: "%PREFIX%shop <page>",
     async execute(client, message, args, user, userStats){  
         // bruh
-        let shops = ["bait", "boosts", "upgrades", "seeds"];
+        let shops = ["bait", "boosts", "upgrades", "seeds", "decorations"];
         let shopsNormal = ["bait", "seeds"];
 
         if (!args[0]) {
             const shopList =  "!shop boosts\n" +
                             "!shop upgrades\n" +
                             "!shop bait\n" + 
-                            "!shop seeds";
+                            "!shop seeds\n" +
+                            "!shop decorations\n";
 
             const embed = new MessageEmbed()
                 .setColor('#63eb65')
@@ -109,6 +110,11 @@ function getItemText(client, itemData, shop, user) {
                 `- 💧Water Rate: Every ${new Date(plantData.waterRate).toCountdown()}\n` +
                 `- 🌾Yield: ${plantData.plantYield}\n`;
     }
+
+    else if (shop == "decorations") {
+        return `**${itemData.name}** - ${itemData.desc} - **${itemData.price}**${flarinEmoji}\n`;
+    }
+
     else 
         return "ERROR";
 }

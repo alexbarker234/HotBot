@@ -45,6 +45,13 @@ module.exports = {
         else if (item.type == "seeds") {
             functions.addThingToUser(user.inventory.seeds, item.name, amount);
         }
+        else if (item.type == "decorations") {
+            let alreadyGot = 0;
+            for (const decoration of user.inventory.decorations)
+                if (decoration.name == item.name) { alreadyGot = decoration.count; break; }
+            if (alreadyGot + amount > item.max) return message.channel.send(`you can only have up to ${item.max} ${item.name}s, you currently have ${alreadyGot}`)
+            functions.addThingToUser(user.inventory.decorations, item.name, amount);
+        }
         else {
             console.log(`${item.type} buy action not defined`);
             return message.channel.send("sorry, orange code™");

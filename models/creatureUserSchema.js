@@ -21,6 +21,7 @@ const creatureUserSchema = new mongoose.Schema({
         plants: [Item],
         fish: [Item],
         potions: [Item],
+        decorations: [Item],
         misc: [Item]
     },
     boosts: [{ name: String, used: Date }],
@@ -44,7 +45,9 @@ const creatureUserSchema = new mongoose.Schema({
             lastUnwateredUpdate: Date,
             sentWaterNotif: Boolean,
             sentGrownNotif: Boolean,
-        }]
+        }],
+        fence: {type: String},
+        path: {type: String}
     },
     stats: {
         totalFish: { type: Number, default: 0 },

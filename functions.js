@@ -447,7 +447,7 @@ String.prototype.toCaps = function() {
 }
 
 Date.nowWA = function() {
-    return new Date((new Date().getTime() + new Date().getTimezoneOffset() + 480));
+    return new Date((new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 480 * 60000));
 }
 
 Date.parseWADate= function(date){

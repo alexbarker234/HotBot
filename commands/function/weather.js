@@ -7,7 +7,7 @@ module.exports = {
     description: 'get the current weather. useful for finding specific eggs',
     usage: "%PREFIX%weather",
     async execute(client, message, args, user, userStats){
-        let weather = await functions.getWeather(client);
+        let weather = client.weatherCache;
         const time = Date.nowWA();
         const embed = new MessageEmbed()
                 .setColor('#f0c862')

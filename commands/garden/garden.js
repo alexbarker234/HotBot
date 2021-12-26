@@ -6,11 +6,42 @@ const config = require("../../config.json");
 const gardenFunctions = require('../../gardenFunctions.js')
 const functions = require('../../functions.js')
 
+const plantLightMap = new Map();
+// perhaps make images with dots where the light sources should be
+plantLightMap.set("Chardaisy", [
+    { X: 17, Y: 37, strength: 10 },
+    { X: 29, Y: 31, strength: 10 },
+    { X: 41, Y: 25, strength: 10 },
+    { X: 53, Y: 19, strength: 10 },
+    { X: 29, Y: 43, strength: 10 },
+    { X: 41, Y: 37, strength: 10 },
+    { X: 53, Y: 31, strength: 10 },
+    { X: 65, Y: 25, strength: 10 },
+])
+plantLightMap.set("Ashdrake", [
+    { X: 27, Y: 35, strength: 20 },
+    { X: 45, Y: 19, strength: 20 },
+    { X: 63, Y: 13, strength: 20 }
+])
+plantLightMap.set("Coalsprout", [
+    { X: 23, Y: 33, strength: 30 },
+    { X: 52, Y: 19, strength: 30 }
+])
+plantLightMap.set("Sparklethorn", [
+    { X: 29, Y: 24, strength: 30 },
+    { X: 51, Y: 13, strength: 30 }
+])
+plantLightMap.set("Starlight Spud", [
+    { X: 26, Y: 44, strength: 20 },
+    { X: 43, Y: 37, strength: 30 },
+    { X: 59, Y: 28, strength: 30 }
+])
 module.exports = {
     name: 'garden',
     description: 'view garden',
     usage: `%PREFIX%garden\n`
-        + `%PREFIX%garden details`,
+        + `%PREFIX%garden details`
+        + `%PREFIX%garden fence <fence>`,
     async execute(client, message, args, user, userStats) {
         gardenFunctions.fixDefaultGarden(user);
 
@@ -42,8 +73,8 @@ module.exports = {
                 if (!gardenUpgrades.includes(upgrade.name)) continue;
                 let upgradeData = client.upgrades.get(upgrade.name);
                 if (!upgradeData) { console.log(`couldnt find ${upgrade.name} data`); continue; }
-                upgradeList += `**${upgradeData.name}** x${upgrade.count}
-                                ❓${upgradeData.effect}\n`
+                upgradeList += `**${upgradeData.name}** x${upgrade.count}\n`
+                    + `❓${upgradeData.effect}\n`
             }
 
             const embed = new MessageEmbed()
@@ -53,23 +84,73 @@ module.exports = {
             embed.addField("plants", plantList);
             message.channel.send({ embeds: [embed] });
         }
+        else if (args[0] == "fence") {
+            if (!args[1]) return message.channel.send("please specify a fence to decorate with")
+            let fenceName = args.slice(1).join(' ').toCaps();
+            if (fenceName == "None") {
+                user.garden.fence = "";
+                return message.channel.send("set garden fence to none")
+            }
+            let fence;
+            for (const decoration of user.inventory.decorations)
+                if (decoration.name == fenceName) fence = decoration.name;
+            if (!fence) return message.channel.send("you dont have that")
+            let fenceData = functions.getItem(client, fence)
+            if (!fenceData || fenceData.decorType != "fence") return message.channel.send("thats not a fence")
+
+            user.garden.fence = fenceName;
+            message.channel.send("set garden fence to " + fenceName)
+        }
         else {
-            const canvas = Canvas.createCanvas(346, 200);
+            let lightSources = [];
+            let fenceType = user.garden.fence;
+            if (fenceType) fenceType = fenceType.replaceAll(" ", "")
+            let fence;
+
+            let fenceHeight = 0;
+            if (fenceType && fenceType != "") {
+                fence = await Canvas.loadImage(`./assets/garden/fences/${fenceType}.png`);
+                fenceHeight = fence.naturalHeight - 86;
+            }
+
+            const canvas = Canvas.createCanvas(346, 200 + fenceHeight);
             const context = canvas.getContext('2d');
             const garden = await Canvas.loadImage('./assets/garden/GardenBase.png');
             const plot = await Canvas.loadImage('./assets/garden/Plot.png');
             const bars = await Canvas.loadImage('./assets/garden/Bars.png');
 
-            context.drawImage(garden, 0, 0, canvas.width, canvas.height);
+            context.drawImage(garden, 0, fenceHeight, garden.naturalWidth, garden.naturalHeight);
+            if (fence) context.drawImage(fence, 0, 0, fence.naturalWidth, fence.naturalHeight);
             for (let layer = 0; layer < 3; layer++) {
+                // LIGHTING
+                if (layer == 1) {
+                    let date = Date.nowWA();
+                    let timeFraction = date.getHours() + (date.getMinutes() / 60);
+                    let darkness = 0;
+                    if (date.betweenHours(20, 6)) darkness = 0.6;
+                    else if (date.betweenHours(6, 8)) darkness = 1 - (((timeFraction - 6) / 2) * 0.6)
+                    else if (date.betweenHours(18, 20)) darkness = ((timeFraction - 18) / 2) * 0.6
+
+                    context.globalAlpha = darkness;
+                    context.globalCompositeOperation = "source-atop";
+                    context.drawImage(getDarkMask(canvas, lightSources), 0, 0, canvas.width, canvas.height)
+                    context.globalAlpha = 1.0;
+                    context.globalCompositeOperation = "source-over";
+                }
+                // PLOTS
                 let plotX = 30;
-                let plotY = 58;
+                let plotY = 58 + fenceHeight;
                 for (let i = 0; i < userStats.gardenPlots; i++) {
                     let plant = user.garden.plants[i];
                     let plantData = client.plants.get(plant.name); // will be undefined if no plant
                     if (layer == 0) {
                         // plot
                         context.drawImage(plot, plotX, plotY, 84, 44);
+                        let lightData = plantLightMap.get(plant.name);
+                        if (lightData) {
+                            for (const light of lightData)
+                                lightSources.push({ X: light.X + plotX, Y: light.Y + plotY - 14, strength: light.strength })
+                        }
                         // plant
                         if (plantData) {
                             let plantFileName = plant.name.split(' ').join(''); // remove all spaces
@@ -82,7 +163,7 @@ module.exports = {
                             context.fillText(plant.name, plotX + 30, plotY + 20);
                         }
                     }
-                    else if (layer == 1 && plantData) {
+                    else if (layer == 2 && plantData) {
                         let barLocX = 8;
                         let barLocY = 38;
 
@@ -107,28 +188,18 @@ module.exports = {
                 }
             }
 
-            let date =  Date.nowWA();
-            let timeFraction = date.getHours() + (date.getMinutes() / 60);
-            let darkness = 0;
-            if (date.betweenHours(20,6)) darkness = 0.6;
-            else if (date.betweenHours(6,8)) darkness = 1 - (((timeFraction - 6) / 2) * 0.6)
-            else if (date.betweenHours(18,20)) darkness = ((timeFraction - 18) / 2) * 0.6
-            
-            context.globalAlpha = darkness;
-            context.globalCompositeOperation = "source-atop";
-            context.drawImage(getDarkMask(canvas), 0, 0, canvas.width, canvas.height)
-            context.globalAlpha = 1.0;
-            context.globalCompositeOperation = "source-over";
-
             const attachment = new MessageAttachment(canvas.toBuffer(), 'garden.png');
 
             message.channel.send({ files: [attachment] });
         }
     }
 }
-function getDarkMask(masterCanvas) {
+function getDarkMask(masterCanvas, lightSources) {
     const canvas = Canvas.createCanvas(masterCanvas.width, masterCanvas.height);
     const context = canvas.getContext('2d');
+
+    for (const light of lightSources)
+        drawLight(context, light.X, light.Y, Math.ceil(0.2 * light.strength), light.strength);
 
     //drawLight(context, 30, 60, 5, 60);
     //drawLight(context, 90, 70, 5, 60);
