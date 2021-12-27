@@ -167,7 +167,12 @@ var userItemCount = exports.userItemCount = (user, itemName) => {
     }
     return 0;
 }
-
+var userCreatureCount = exports.userCreatureCount = (user, creatureName) => {
+    for (const creature of user.creatures) {
+        if (creature.name == creatureName) return creature.count;
+    }
+    return 0;
+}
 var weightScale = exports.weightScale = (map, influence) => {
     let weightSum = 0;
     for (const [key, value] of map) weightSum += value;
