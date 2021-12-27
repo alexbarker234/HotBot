@@ -1,0 +1,6 @@
+
+`trading`
+    - trade rework!
+    - now you can trade items too, and it much less confusing to trade
+    - trade command is now under 'economy'
+    - !help trade for more info

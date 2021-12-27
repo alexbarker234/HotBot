@@ -21,8 +21,7 @@ exports.checkEgg = async (client, user, userStats, message) => {
             if (egg) {
                 console.log('\x1b[36m%s\x1b[0m', `${Date.nowWA().toHM()}:`, `given ${message.author.username} a ${egg.name} egg`);
 
-                let emoji = functions.getEmojiFromName(client, egg.name + "Egg");
-                if (emoji == "❌") emoji = '🥚';
+                let emoji = functions.getEmojiFromName(client, egg.name + "Egg", '🥚');
                 message.react(emoji);
 
                 const eggData = { name: egg.name, obtained: new Date(), hatchTime: egg.hatchTime }

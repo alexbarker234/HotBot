@@ -12,7 +12,7 @@ module.exports = {
     alt: 'item',
     async execute(client, message, args, user, userStats){          
         if (args[0]) {
-            let flarinEmoji = functions.getEmojiFromName(client, "flarin");
+            let flarinEmoji = functions.getEmojiFromName(client, "flarin", '💰');
 
             let itemName = args.join(' ').toCaps();
             let itemFound;
@@ -27,8 +27,7 @@ module.exports = {
             }
             if (!itemFound) return message.channel.send(`you dont have any ${itemName}`);
 
-            let itemEmoji = functions.getEmojiFromName(client, itemName);
-            if (itemEmoji == '❌') itemEmoji = "";
+            let itemEmoji = functions.getEmojiFromName(client, itemName,'');
 
             const embed = new MessageEmbed()
                 .setColor('#f0c862')
@@ -65,8 +64,7 @@ module.exports = {
                 if (key == "fish") continue;
                 let invText = "";
                 for (const item of user.inventory[key]){
-                    let itemEmoji = functions.getEmojiFromName(client, item.name);
-                    if (itemEmoji == '❌') itemEmoji = "";
+                    let itemEmoji = functions.getEmojiFromName(client, item.name,'');
                     invText += `${itemEmoji}**${item.name}** x${item.count}\n`
                 }
                 embed.addField(key, invText == "" ? "none" : invText, true);

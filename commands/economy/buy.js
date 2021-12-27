@@ -11,7 +11,7 @@ module.exports = {
 
         let itemName = args[0];
         let amount = 1;
-        let flarinEmoji = functions.getEmojiFromName(client, "flarin");
+        let flarinEmoji = functions.getEmojiFromName(client, "flarin", '💰');
 
         // potential better way to do this: check if the string contains any item name, then check if the last arg is not included in the item name, if yes then make that the amount
         if (!isNaN(parseInt(args[args.length- 1]))) {

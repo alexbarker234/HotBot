@@ -5,6 +5,7 @@ module.exports = (client, Discord) =>{
 
     for (const file of creatureFiles){
         const creature = require(`../creatures/${file}`)
+        creature.type = "creature";
         if (creature.name) client.creatures.set(creature.name, creature);
     }
 }

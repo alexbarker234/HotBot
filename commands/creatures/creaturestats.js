@@ -80,7 +80,6 @@ module.exports = {
         else {
             for (const [name, creature] of creatureMap.entries()) {
                 let emoji = functions.getEmojiFromName(client, name);
-                if (!emoji) emoji = '❌';
                 creatures += `${emoji} **${name}**: ${creature.count}\n`;
                 total += creature.count;
             }

@@ -9,7 +9,7 @@ module.exports = {
         + "%PREFIX%balance top",
     alt: 'flarins',
     async execute(client, message, args, user, userStats){  
-        let flarinEmoji = functions.getEmojiFromName(client, "flarin");
+        let flarinEmoji = functions.getEmojiFromName(client, "flarin", '💰');
 
         if (args[0] != "top") {
             const embed = new MessageEmbed()

@@ -20,8 +20,7 @@ module.exports = {
         let plantData = client.plants.get(plant.name);
         if (!plantData) return console.log("couldnt find " + plant.name);
 
-        let growthMultiplier = 1 - (userStats.gardenGrowthRate - 1);
-        if ((Date.now() - plant.planted - plant.timeUnwatered) * growthMultiplier < plantData.growTime) {
+        if (gardenFunctions.calculateGrowthPercent(plant, userStats, plantData) < 1) {
             const filter = m => m.author.id == message.author.id;
             const collector = new MessageCollector(message.channel, filter, {
                 max: 1,

@@ -48,24 +48,36 @@ module.exports = {
         user.save();
 
         if (args[0] == "details") {
-            let plantList = "";
+            let plantList = [];
             for (let i = 0; i < userStats.gardenPlots; i++) {
                 let plant = user.garden.plants[i];
                 let plantData = client.plants.get(plant.name);
                 let t = "`";
-                plantList += `${t}plot ${i + 1}: ${plant.name}${t}\n`
+                let arrayData = []
+                arrayData[0] = `plot ${i + 1}: ${plant.name}`
                 if (plantData) {
                     let waterLevel = gardenFunctions.calculateWaterPercent(plant, userStats, plantData);
                     let grownMs = plantData.growTime - (plantData.growTime * gardenFunctions.calculateGrowthPercent(plant, userStats, plantData));
                     let grownTime = new Date(grownMs).toCountdown();
-                    if (grownMs < 0) grownTime = "grown!";
+                    if (grownMs <= 0) grownTime = "grown!";
 
-                    plantList += `🌿**time until grown:** ${grownTime}\n`
-                        + `💧**water level:** ${(waterLevel * 100).toFixed(2)}%\n`
+                    arrayData[1] = `${t}🌿growth🌿${t}\n`
+                        + `- **time until grown:** ${grownTime}\n`
+                        + `- **grow time:** ${new Date(plantData.growTime).toCountdown()}\n`
+                        + `- **boosted grow time:** ${new Date(gardenFunctions.calculateGrowTime(userStats, plantData)).toCountdown()}\n\n`
+                        + `${t}💧water💧${t}\n`
+                        + `- **water level:** ${(waterLevel * 100).toFixed(2)}%\n`
+                        + `- **water rate:** ${new Date(plantData.waterRate).toCountdown()}\n`
+                        + `- **boosted water rate:** ${new Date(gardenFunctions.calculateWaterRate(userStats, plantData)).toCountdown()}\n\n`
                         + `🍂**dehydration:** ${new Date(plant.timeUnwatered).toCountdown()}\n`;
+                    /*arrayData[1] = `🌿**time until grown:** ${grownTime}\n`
+                        + `-grow time: ${new Date(plantData.growTime).toCountdown()} ⏫ *${new Date(gardenFunctions.calculateGrowTime(userStats, plantData)).toCountdown()}* ⏫\n`
+                        + `💧**water level:** ${(waterLevel * 100).toFixed(2)}%\n`
+                        + `-water rate: ${new Date(plantData.waterRate).toCountdown()} ⏫ *${new Date(gardenFunctions.calculateWaterRate(userStats, plantData)).toCountdown()}* ⏫\n`
+                        + `🍂**dehydration:** ${new Date(plant.timeUnwatered).toCountdown()}\n`;*/
                 }
+                plantList.push(arrayData);
             }
-            if (plantList == "") plantList = "error";
 
             let gardenUpgrades = ["Better Equipment", "Sprinkler", "Fertilizer"]
             let upgradeList = "";
@@ -81,7 +93,11 @@ module.exports = {
                 .setColor('#63e674')
                 .setTitle(message.author.username + "'s garden")
             if (upgradeList != "") embed.addField("upgrades", upgradeList);
-            embed.addField("plants", plantList);
+            for (plant of plantList) {
+                embed.addField(plant[0], plant[1], true);
+            }
+            //if (plantList[0] != "") embed.addField("plants", plantList[0]);
+            //if (plantList[1] != "") embed.addField("plants", plantList[1]);
             message.channel.send({ embeds: [embed] });
         }
         else if (["fence", "path"].includes(args[0])) {

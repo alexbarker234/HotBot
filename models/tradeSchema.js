@@ -6,9 +6,10 @@ const reqString = {
 }
 
 const tradeSchema = new mongoose.Schema({
-    messageID: reqString,
-    status: {type: String, required: true, default: 'Open'} ,
-    traders: [{ userID : String, accepted: Boolean, creatures: [{name: String, count: Number}] }],
+    guildID: reqString,
+    status: {type: String, required: true, default: 'Open'},
+    startDate: {type: Date},
+    traders: [{ userID : String, accepted: Boolean, items: [{name: String, count: Number}] }],
 })
 
 module.exports = mongoose.model('tradeMsg', tradeSchema)

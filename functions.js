@@ -159,6 +159,15 @@ var userHasUpgrade = exports.userHasUpgrade = (user, upgradeName) => {
     return false;
 }
 
+var userItemCount = exports.userItemCount = (user, itemName) => {
+    for (const [key, value] of Object.entries(user.inventory)) {
+        for (const item of user.inventory[key]) {
+            if (item.name == itemName) return item.count;
+        }
+    }
+    return 0;
+}
+
 var weightScale = exports.weightScale = (map, influence) => {
     let weightSum = 0;
     for (const [key, value] of map) weightSum += value;
@@ -248,7 +257,7 @@ exports.getItem = (client, nameToFind) => {
 }
 
 let emojiCache = new Map();
-exports.getEmojiFromName = (client, name) => {
+exports.getEmojiFromName = (client, name, fallback) => {
     name = name.split(' ').join(''); // replace only removes the first occurance without regex for some reason
     let emojiFromCache = emojiCache.get(name);
     if (emojiFromCache) return emojiFromCache;
@@ -262,7 +271,7 @@ exports.getEmojiFromName = (client, name) => {
             break;
         }
     }
-    if (!emojiToReturn) emojiToReturn = '❌'; // if none found
+    if (!emojiToReturn) emojiToReturn = fallback != undefined ? fallback : '❌'; // if none found
     return emojiToReturn;
 }
 
@@ -465,13 +474,14 @@ Date.prototype.toCountdown = function(){
     const hours = parseInt(timeHMS.substr(0, 2));
     const mins = parseInt(timeHMS.substr(3, 5));
     const secs = parseInt(timeHMS.substr(6, 8));
-
+    
     let string = "";
     if(days != 0) string += `${days}d `
     if(hours != 0) string += `${hours}h `
     if(mins != 0) string += `${mins}m `
     if(secs != 0) string += `${secs}s `
     if (string == "") string = "0s"; // if the timer is 0;
+    if (string.charAt(string.length - 1)) string = string.slice(0, -1) // remove space from end
 
     /*(days > 0 ? days + "d " : "") + 
             (hours > 0 || days > 0 ? hours + "h " : "") +

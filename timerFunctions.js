@@ -125,8 +125,7 @@ var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
 
         let rewardString = "";
         for (item of rewards.itemRewards) {
-            let emoji = functions.getEmojiFromName(client, item.name);
-            if (emoji == '❌') emoji = '';
+            let emoji = functions.getEmojiFromName(client, item.name, '');
             rewardString += `${emoji}${item.name} **x${item.count}**\n`;
         }
         if (rewards.dustReward > 0) { 

@@ -15,7 +15,7 @@ module.exports = {
         if (args[0] == "list") {
             let fishText = "";
             let fishValue = "";
-            let flarinEmoji = functions.getEmojiFromName(client, "flarin");
+            let flarinEmoji = functions.getEmojiFromName(client, "flarin", '💰');
             for (const f of user.inventory.fish) {
                 let emoji = functions.getEmojiFromName(client, f.name);
                 const fishData = client.fish.get(f.name);
@@ -74,12 +74,11 @@ module.exports = {
                 let chestString = "";
                 if (chest) {
                     for (chestReward of chest.chestRewards) {
-                        let emoji = functions.getEmojiFromName(client, chestReward.name);
-                        if (emoji == '❌') emoji = '';
+                        let emoji = functions.getEmojiFromName(client, chestReward.name,'');
                         chestString += `${emoji}${chestReward.name} **x${chestReward.count}**\n`;
                     }
                     if (chest.flarinReward > 0) { 
-                        let flarinEmoji = functions.getEmojiFromName(client, "flarin");
+                        let flarinEmoji = functions.getEmojiFromName(client, "flarin", '💰');
                         chestString += `${chest.flarinReward}${flarinEmoji}\n`;
                     }
                     user.stats.totalChests++;

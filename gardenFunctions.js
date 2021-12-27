@@ -28,12 +28,19 @@ var updatePlantWater = exports.updatePlantWater = async (client, user, plant) =>
     }
 }
 
-exports.calculateWaterPercent = (plant, userStats, plantData) => {
+var calculateWaterRate = exports.calculateWaterRate = (userStats, plantData) => {
     let waterMultiplier = 1 + (1 - userStats.gardenWaterNeed);
-    return Math.clamp(1 - ((Date.now() - plant.lastWatered.getTime()) / (plantData.waterRate * waterMultiplier)), 0, 1)
+    return plantData.waterRate * waterMultiplier;
+}
+exports.calculateWaterPercent = (plant, userStats, plantData) => {
+    return Math.clamp(1 - ((Date.now() - plant.lastWatered.getTime()) / calculateWaterRate(userStats, plantData)), 0, 1)
+}
+var calculateGrowTime = exports.calculateGrowTime = (userStats, plantData) => {
+    let growTimeMultiplier = 1 - (userStats.gardenGrowthRate - 1);
+    return plantData.growTime * growTimeMultiplier;
 }
 exports.calculateGrowthPercent = (plant, userStats, plantData) => {
-    return Math.clamp(((((Date.now() - plant.planted) - plant.timeUnwatered) * userStats.gardenGrowthRate) / plantData.growTime), 0, 1)
+    return Math.clamp((((Date.now() - plant.planted) - plant.timeUnwatered) / calculateGrowTime(userStats, plantData)), 0, 1)
 }
 
 exports.fixDefaultGarden = (user) => {

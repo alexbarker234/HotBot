@@ -9,7 +9,7 @@ module.exports = {
     usage: "%PREFIX%sell <item name> [amount]\n"
         + "%PREFIX%sell fish",
     async execute(client, message, args, user, userStats){  
-        let flarinEmoji = functions.getEmojiFromName(client, "flarin");
+        let flarinEmoji = functions.getEmojiFromName(client, "flarin", '💰');
 
         if (!args[0]) {
             if (Math.random() < 0.1) {

@@ -3,5 +3,6 @@ module.exports = {
     desc: "",
     price: 500,
     max: 1,
+    cantTrade: true,
     decorType: "path"
 }

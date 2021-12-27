@@ -32,7 +32,6 @@ module.exports = {
             let total = 0;
             for (const c of user.creatures) {
                 let emoji = functions.getEmojiFromName(client, c.name);
-                if (!emoji) emoji = '❌';
                 creatureText += `${emoji}` + " " + c.name + ": ***" + c.count + "***\n";
                 total += c.count;
             }

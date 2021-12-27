@@ -72,9 +72,8 @@ module.exports = {
     }
 } 
 function getItemText(client, itemData, shop, user) {
-    let flarinEmoji = functions.getEmojiFromName(client, "flarin");
-    let itemEmoji = functions.getEmojiFromName(client, itemData.name.replace(" ", ""));
-    if (itemEmoji == '❌') itemEmoji = "";
+    let flarinEmoji = functions.getEmojiFromName(client, "flarin", '💰');
+    let itemEmoji = functions.getEmojiFromName(client, itemData.name.replace(" ", ""),'');
 
     let duration = itemData.duration / (60 * 60 * 1000);
     if (duration < 1) duration = `${duration * 60}m`

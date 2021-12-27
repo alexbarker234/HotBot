@@ -26,7 +26,7 @@ module.exports = {
         else {
             const titleEmojis = new Map()
             titleEmojis.set("creatures",functions.getEmojiFromName(client, "Gorb"))
-            titleEmojis.set("economy",functions.getEmojiFromName(client, "flarin"))
+            titleEmojis.set("economy",functions.getEmojiFromName(client, "flarin", '💰'))
             titleEmojis.set("fishing",functions.getEmojiFromName(client, "Deepjaw"))
             titleEmojis.set("fun", '🎲')
             titleEmojis.set("function", '🌧️')
