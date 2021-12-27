@@ -84,35 +84,28 @@ module.exports = {
             embed.addField("plants", plantList);
             message.channel.send({ embeds: [embed] });
         }
-        else if (args[0] == "fence") {
-            if (!args[1]) return message.channel.send("please specify a fence to decorate with")
-            let fenceName = args.slice(1).join(' ').toCaps();
-            if (fenceName == "None") {
-                user.garden.fence = "";
-                return message.channel.send("set garden fence to none")
-            }
-            let fence;
-            for (const decoration of user.inventory.decorations)
-                if (decoration.name == fenceName) fence = decoration.name;
-            if (!fence) return message.channel.send("you dont have that")
-            let fenceData = functions.getItem(client, fence)
-            if (!fenceData || fenceData.decorType != "fence") return message.channel.send("thats not a fence")
-
-            user.garden.fence = fenceName;
-            message.channel.send("set garden fence to " + fenceName)
+        else if (["fence", "path"].includes(args[0])) {
+            if (!args[1]) return message.channel.send(`please specify a ${args[1]} to decorate with`)
+            decorate(client, message.channel, user, args[0], args.slice(1).join(' ').toCaps())
         }
         else {
             let lightSources = [];
-            let fenceType = user.garden.fence;
-            if (fenceType) fenceType = fenceType.replaceAll(" ", "")
-            let fence;
 
+            let fenceType = user.garden.fence;
+            let fence;
             let fenceHeight = 0;
             if (fenceType && fenceType != "") {
-                fence = await Canvas.loadImage(`./assets/garden/fences/${fenceType}.png`);
+                fence = await Canvas.loadImage(`./assets/garden/fences/${fenceType.replaceAll(" ", "")}.png`);
                 fenceHeight = fence.naturalHeight - 86;
             }
 
+            let pathType = user.garden.path;
+            let path;
+            if (pathType && pathType != "") {
+                path = await Canvas.loadImage(`./assets/garden/paths/${pathType.replaceAll(" ", "")}.png`);
+            }
+
+            // path offset = 88 , 42
             const canvas = Canvas.createCanvas(346, 200 + fenceHeight);
             const context = canvas.getContext('2d');
             const garden = await Canvas.loadImage('./assets/garden/GardenBase.png');
@@ -121,6 +114,7 @@ module.exports = {
 
             context.drawImage(garden, 0, fenceHeight, garden.naturalWidth, garden.naturalHeight);
             if (fence) context.drawImage(fence, 0, 0, fence.naturalWidth, fence.naturalHeight);
+            if (path) context.drawImage(path, 89, 40 + fenceHeight, path.naturalWidth, path.naturalHeight);
             for (let layer = 0; layer < 3; layer++) {
                 // LIGHTING
                 if (layer == 1) {
@@ -193,6 +187,21 @@ module.exports = {
             message.channel.send({ files: [attachment] });
         }
     }
+}
+function decorate(client, channel, user, type, name) {
+    if (name == "None") {
+        user.garden[type] = "";
+        return channel.send(`set garden ${type} to none`)
+    }
+    let decor;
+    for (const decoration of user.inventory.decorations)
+        if (decoration.name == name) decor = decoration.name;
+    if (!decor) return channel.send("you dont have that")
+    let decorData = functions.getItem(client, decor)
+    if (!decorData || decorData.decorType != type) return channel.send(`thats not a ${type}`)
+
+    user.garden[type] = name;
+    channel.send(`set garden ${type} to ${name}`)
 }
 function getDarkMask(masterCanvas, lightSources) {
     const canvas = Canvas.createCanvas(masterCanvas.width, masterCanvas.height);

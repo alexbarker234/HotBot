@@ -7,7 +7,7 @@ module.exports = {
     usage: "%PREFIX%changelog [version]\n"
         + "%PREFIX%changelog list",
     execute(client, message, args, user, userStats){
-        const logs = fs.readdirSync('./changelogs/')
+        let logs = fs.readdirSync('./changelogs/')
         if (args[0] == "list") {
             let logString = "";
             for (const log of logs) 
@@ -20,14 +20,14 @@ module.exports = {
             message.channel.send({embeds: [embed]});
         }
         else {
-            let file = logs[logs.length - 1];
+            logs = logs.map(x => x.replaceAll(".txt", ""))
+            let file = logs.reduce((a, b) => 0 < a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }) ? a : b); // get latest vers
             if (args[0]) {
                 if (args[0].charAt(0) != "v") args[0] = "v" + args[0];
-                args[0] += ".txt";
                 if (!logs.includes(args[0])) return message.channel.send("changelog doesnt exist")
                 file = args[0];
             }
-            var data = fs.readFileSync(`./changelogs/${file}`, 'utf8');
+            var data = fs.readFileSync(`./changelogs/${file}.txt`, 'utf8');
             const embed = new MessageEmbed()
             .setColor('#f0c862')
             .setTitle(`HotBot ${file.replace(".txt", "")}`)

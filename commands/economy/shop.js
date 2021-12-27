@@ -112,7 +112,12 @@ function getItemText(client, itemData, shop, user) {
     }
 
     else if (shop == "decorations") {
-        return `**${itemData.name}** - ${itemData.desc} - **${itemData.price}**${flarinEmoji}\n`;
+        let count = 0;
+        for (const decoration of user.inventory.decorations) 
+            if (itemData.name == decoration.name) count = decoration.count;
+        
+        let emoji = count == itemData.max ? '✅' : '';
+        return `${emoji}**${itemData.name}** - ${itemData.desc} - **${itemData.price}**${flarinEmoji}\n`;
     }
 
     else 

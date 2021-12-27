@@ -33,8 +33,7 @@ exports.calculateWaterPercent = (plant, userStats, plantData) => {
     return Math.clamp(1 - ((Date.now() - plant.lastWatered.getTime()) / (plantData.waterRate * waterMultiplier)), 0, 1)
 }
 exports.calculateGrowthPercent = (plant, userStats, plantData) => {
-    let growthMultiplier = 1 - (userStats.gardenGrowthRate - 1);
-    return Math.clamp(((((Date.now() - plant.planted) - plant.timeUnwatered) * growthMultiplier) / plantData.growTime), 0, 1)
+    return Math.clamp(((((Date.now() - plant.planted) - plant.timeUnwatered) * userStats.gardenGrowthRate) / plantData.growTime), 0, 1)
 }
 
 exports.fixDefaultGarden = (user) => {
