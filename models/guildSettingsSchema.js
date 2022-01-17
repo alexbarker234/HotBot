@@ -14,7 +14,10 @@ const guildSettingsSchema = new mongoose.Schema({
         alertChannel: { type: String, default: "-1" },
         prefix: { type: String, default: "!" },
         events: { type: Boolean, default: true },
-        }
-    })
+    },
+    sentAlert: {
+        gobbyTrader: { type: Boolean, default: false }
+    }
+});
 
 module.exports = mongoose.model('GuildSettings', guildSettingsSchema)

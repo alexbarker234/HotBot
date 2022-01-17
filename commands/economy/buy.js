@@ -25,6 +25,7 @@ module.exports = {
         
         let item = functions.getItem(client, itemName);
         if (!item || item.cantBuy) return message.channel.send("cannot find that item in the shop");
+        if (item.buyRequirements != undefined && !item.buyRequirements()) return message.channel.send("you cant buy that item right now");
         let totalPrice = item.price * amount;
         if (amount > 1 && item.type == "boosts") return message.channel.send("you cant buy multiple boosts");
         if (user.flarins < totalPrice) return message.channel.send(`you cannot afford that item. your current balance is ${user.flarins}${flarinEmoji} while ${amount} ${itemName} costs ${totalPrice}${flarinEmoji}`);

@@ -140,7 +140,7 @@ module.exports = {
                                 users[1 - i].flarins += item.count;
                             }
                             else {
-                                let itemData = getItemData(client,itemName);
+                                let itemData = getItemData(client,item.name);
     
                                 let giverInv = itemData.type == "creature" ? users[i].creatures : users[i].inventory[itemData.type];
                                 let receiverInv = itemData.type == "creature" ? users[1 - i].creatures : users[1 - i].inventory[itemData.type];

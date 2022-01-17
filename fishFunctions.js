@@ -84,14 +84,14 @@ exports.chooseChestRewards = async (client, user, addToUser) => {
             if (addToUser) user.flarins += flarinReward;
         }
     }
-    // 1/25 to get an upgrade
-    if (Math.random() < 1 / 25) {
+    // 1/25 chance to get an upgrade - about every 500 fishes
+    if (Math.random() < 1.0 / 25.0) {
+        console.log(`${user.userID} just got an upgrade!`)
         chestTier = "Mythic";
-        let gloveCount = 0;
-        for (const upgrade of user.upgrades)
-            if (upgrade.name == "Ancient Gloves") gloveCount = upgrade.count;
+
         let upgradeData = functions.getItem(client, "Ancient Gloves");
         if (!upgradeData) return console.log(`error getting ${upgrade.name} data`)
+
         if (functions.getUpgradeCount(user, "Ancient Gloves") < upgradeData.max) {
             functions.addThingToUser(chestRewards, "Ancient Gloves", 1)
             if (addToUser) functions.addThingToUser(user.upgrades, "Ancient Gloves", 1);

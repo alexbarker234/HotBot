@@ -1,6 +1,6 @@
 module.exports = {
     name: "Ashdrake",
-    desc: "A sentient plant used in very powerful magical potions. However, it sucks water from neibouring plants and one plant does not yield very many Ashdrakes",
+    desc: "A sentient plant used in very powerful magical potions. However, it sucks water from neighbouring plants and one plant does not yield very many Ashdrakes",
     plantedEffect: "Increases all plants water need by 20%",
     price: 500,
     waterRate: 20 * 60 * 60 * 1000,

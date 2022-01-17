@@ -1,0 +1,7 @@
+
+`fishing`
+    - you can now get a special garden upgrade from chests (you should have been able to before, but i suck)
+`butterflies`
+    - now sometimes gives you special short term boosts
+`gobby trader!`
+    - every wednesday, a gobby trading boat arrives selling unique gobby wares :D

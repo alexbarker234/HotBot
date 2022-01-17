@@ -8,18 +8,18 @@ module.exports = {
     description: 'test fish things',
     usage: "%PREFIX%fishtest [chance] [bias strength] [bonus chance]",
     admin: true,
-    async execute(client, message, args, user, userStats){  
+    async execute(client, message, args, user, userStats) {
         if (args[0] == "user") {
-            let sampleSize = args[1] ? Number(args[1]): 20000;
+            let sampleSize = args[1] ? Number(args[1]) : 20000;
             let caughtList = [];
             let chestList = [];
             const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
             let value = 0;
 
             for (let i = 0; i < sampleSize; i++) {
-                if (Math.random() < userStats.fishChance) {           
+                if (Math.random() < userStats.fishChance) {
                     let bonus = Math.random() < 0.7 && user.baitEquipped == "Bloodleech" ? 2 : 1;
-                    for (let i = 0; i < bonus; i++) {           
+                    for (let i = 0; i < bonus; i++) {
                         const fish = fishFunctions.chooseFish(client, user.baitEquipped == "Toxicane" ? 0.7 : 0);
                         if (!fish) return console.log("error getting fish");
 
@@ -29,25 +29,26 @@ module.exports = {
                     }
                 }
                 // CHESTS
-                if (Math.random() < userStats.chestChance) chestList.push(fishFunctions.chooseChestRewards(client, user, false));        
+                if (Math.random() < userStats.chestChance) chestList.push(await fishFunctions.chooseChestRewards(client, user, false));
             }
             message.channel.send(`times fished: ${sampleSize}\n`
-                                + `total flarins: ${value}\n`
-                                + `average flarins per fish: ${value / sampleSize}\n`
-                                + `\nbait: ${user.baitEquipped}`)
+                + `total flarins: ${value}\n`
+                + `total chests: ${chestList.length}\n`
+                + `average flarins per fish: ${value / sampleSize}\n`
+                + `\nbait: ${user.baitEquipped}`)
         }
         else {
             let sampleSize = 20000;
             let value = 0;
-            let fishChance = args[0] ? Number(args[0]): 0.3;
+            let fishChance = args[0] ? Number(args[0]) : 0.3;
             let biasStrength = args[1] ? Number(args[1]) : 0;
             let bonusChance = args[2] ? Number(args[2]) : 0;
 
             let total = 0;
             let probabilityMap = new Map();
-            for (const [name, fish] of client.fish) { 
+            for (const [name, fish] of client.fish) {
                 total += fish.rarity();
-                probabilityMap.set(fish.name, {count: 0});
+                probabilityMap.set(fish.name, { count: 0 });
             }
 
 
@@ -62,7 +63,7 @@ module.exports = {
                     const fish = fishFunctions.chooseFish(client, biasStrength);
                     probabilityMap.get(fish.name).count++;
                     value += fish.price;
-                }            
+                }
             }
             let fish = "**name  |  probability  |  intended**\n";
 
@@ -70,9 +71,9 @@ module.exports = {
 
             for (const [name, value] of probabilityMap) {
                 fish += `${name}  |  ${((value.count / succesfulCatches) * 100).toFixed(2)}  | ${((client.fish.get(name).rarity() / total) * 100).toFixed(2)} \n`;
-            }        
+            }
 
-            
+
             message.channel.send(`${fish}\n\nflarins per fish: ${value / sampleSize}`)
         }
         // stats

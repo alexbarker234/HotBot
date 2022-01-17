@@ -38,7 +38,7 @@ module.exports = async (Discord, client, message) => {
     if (command.admin && message.author.id != '283182274474672128' && message.author.id != '902830379629707314') return;
 
     try {
-        command.execute(client, message, args, user, userStats);
+        await command.execute(client, message, args, user, userStats);
     }
     catch (err) {
         message.reply("error executing command. sorry lmao can't code.");

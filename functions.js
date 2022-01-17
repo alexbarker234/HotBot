@@ -81,9 +81,9 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
     };
 
     if (userID == '283182274474672128') {
-        /*statObject.chestChance = 0.7;
-        statObject.eggCD = 0;
-        statObject.eggChance = 1;*/
+        //statObject.chestChance = 0.7;
+        //statObject.eggCD = 0;
+        //statObject.eggChance = 1;
     }
 
     const filter = { userID: userID, guildID: guildID }
@@ -190,6 +190,7 @@ exports.chooseButterflyRewards = async (client, user, addToUser) => {
 
     if (addToUser === undefined) addToUser = true;
     let itemRewards = [];
+    let boostRewards = [];
 
     seeds = new Map();
     seeds.set("Gasbloom Seeds", 0.5);
@@ -225,12 +226,33 @@ exports.chooseButterflyRewards = async (client, user, addToUser) => {
             if (addToUser) addThingToUser(user.inventory.bait, baitChoice, baitNum);
         }
     }
+    // boosts
+    if (Math.random() < 0.2) {
+        let rand = Math.floor(Math.random() * 3);
+        if (rand == 0) {
+            addThingToUser(boostRewards, "Blessing of the Pirate", 1)
+            if (addToUser) addBoost(user, "Blessing of the Pirate");
+        }
+        else if (rand == 1) {
+            addThingToUser(boostRewards, "Blessing of the Shark", 1)
+            if (addToUser) addBoost(user, "Blessing of the Shark");
+        }
+        else if (rand == 2) {
+            addThingToUser(boostRewards, "Blessing of the Dryad", 1)
+            if (addToUser){
+                user.garden.plants.forEach(async (plant) => {
+                    let plantData = await client.plants.get(plant.name);
+                    if (plantData) {console.log(plantData.growTime * 0.1);plant.growthOffset += plantData.growTime * 0.1; }
+                });
+            }
+        }
+    }
 
     let dustReward = Math.floor(Math.biasedRand(1,50,10,1.5));
     addThingToUser(itemRewards, "Butterfly Dust", dustReward);
     if (addToUser) addThingToUser(user.inventory.misc, "Butterfly Dust", dustReward);
 
-    return { itemRewards: itemRewards};
+    return { itemRewards: itemRewards, boostRewards: boostRewards};
 }
 
 exports.isRaining = (client, user) => {
@@ -242,6 +264,7 @@ exports.isRaining = (client, user) => {
 exports.getUpgradeCount = (user, upgradeName) => {
     for (const upgrade of user.upgrades) 
         if (upgrade.name == upgradeName) return upgrade.count;
+    return 0;
 }
 
 var getHotness = exports.getHotness = (userID, prevDay) => {
@@ -318,7 +341,7 @@ exports.scrambleWord = (word) => {
 }
 
 // returns false if failed
-exports.addBoost = (client, user, boostName) => {
+var addBoost = exports.addBoost = (client, user, boostName) => {
     // clear expired boosts
     clearFinishedBoosts(client, user);
     // check if user has boost
@@ -381,23 +404,32 @@ var removeThingFromUser = exports.removeThingFromUser = (thingArray, thingName, 
     else thingArray.splice(thingIndex, 1);
 }
 
-var sendAlert = exports.sendAlert = async (client, alertContent, guildID) => {
+var sendAlert = exports.sendAlert = async (client, alertContent, guildID, type = "alert") => {
+    let channel = await getAlertChannel(client, guildID, type);
+    if (!channel) return console.log("error getting alert channel for " + guildID);
+    channel.send(alertContent)
+}
+
+var getAlertChannel = exports.getAlertChannel = async (client, guildID, type = "alert") => {
     let guildSettings = await guildSettingsModel.findOne({guildID: guildID})
     if (!guildSettings) return;
 
     let channel = -1;
-    if (guildSettings.settings.alertChannel != -1) channel = guildSettings.settings.alertChannel;
+    if (guildSettings.settings.eventChannel != -1 && type == "event") channel = guildSettings.settings.eventChannel;
+    else if (guildSettings.settings.alertChannel != -1) channel = guildSettings.settings.alertChannel;
     else if (guildSettings.settings.botChannel!= -1) channel = guildSettings.settings.botChannel;
     if (channel != -1) {
         let botC
         try {
             botC = await client.channels.fetch(channel.toString());
         }
-        catch (err) {console.error("error finding channel",err);}
-        if (botC) botC.send(alertContent)
-        else console.error("cant find channel");
+        catch (err) {/*console.error("error finding channel",err);*/} // yeah alright i get it, you dont have access to it 
+        
+        if (botC) return botC;
+        //else console.error("cant find channel");
     }
 }
+
 
 exports.getPrefix = (client, guildID) => {
     let prefixCustom = client.prefixes.get(guildID)         

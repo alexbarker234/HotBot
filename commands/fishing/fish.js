@@ -74,6 +74,7 @@ module.exports = {
                 let chestString = "";
                 if (chest) {
                     for (chestReward of chest.chestRewards) {
+                        console.log(chestReward.name);
                         let emoji = functions.getEmojiFromName(client, chestReward.name,'');
                         chestString += `${emoji}${chestReward.name} **x${chestReward.count}**\n`;
                     }

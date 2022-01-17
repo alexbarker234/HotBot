@@ -46,7 +46,7 @@ module.exports = {
                 if (plantData.growTime) detailsString += `${t}🌿grow time🌿${t}\n- ${new Date(plantData.growTime).toCountdown()}\n`
                 if (plantData.waterRate) detailsString += `${t}💧water rate💧${t}\n- every ${new Date(plantData.waterRate).toCountdown()}\n`
                 if (plantData.plantYield) detailsString += `${t}🌾yield🌾${t}\n- ${plantData.plantYield} ${plantData.name}\n` 
-                if (plantData.plantedEffect) detailsString += `${t}✨planted effect✨${t}\n- ${plantData.plantedEffect}`
+                if (plantData.plantedEffect) detailsString += `${t}✨planted effect✨${t}\n- ${plantData.plantedEffect}\n`
             }
             if (detailsString) embed.addField("details", detailsString)
             message.channel.send({ embeds: [embed] });

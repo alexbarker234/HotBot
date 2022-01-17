@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Plant = require('./plantSchema')
 
 // so we dont have to type x: {type: string, etc}
 const reqString = {
@@ -37,15 +38,7 @@ const creatureUserSchema = new mongoose.Schema({
         nightNotifs: { type: Boolean, default: true }
     },
     garden: {
-        plants: [{
-            name: String,
-            planted: Date,
-            lastWatered: Date,
-            timeUnwatered: Number,
-            lastUnwateredUpdate: Date,
-            sentWaterNotif: Boolean,
-            sentGrownNotif: Boolean,
-        }],
+        plants: [Plant],
         fence: {type: String},
         path: {type: String}
     },

@@ -1,5 +1,6 @@
 const config = require("./config.json");
 const functions = require("./functions.js");
+const plantSchema = require('./models/plantSchema');
 
 
 var updatePlantWater = exports.updatePlantWater = async (client, user, plant) => {
@@ -29,22 +30,38 @@ var updatePlantWater = exports.updatePlantWater = async (client, user, plant) =>
 }
 
 var calculateWaterRate = exports.calculateWaterRate = (userStats, plantData) => {
+    if (!plantData) return 0;
     let waterMultiplier = 1 + (1 - userStats.gardenWaterNeed);
     return plantData.waterRate * waterMultiplier;
 }
 exports.calculateWaterPercent = (plant, userStats, plantData) => {
+    if (!plantData) return 0;
     return Math.clamp(1 - ((Date.now() - plant.lastWatered.getTime()) / calculateWaterRate(userStats, plantData)), 0, 1)
 }
 var calculateGrowTime = exports.calculateGrowTime = (userStats, plantData) => {
+    if (!plantData) return 0;
     let growTimeMultiplier = 1 - (userStats.gardenGrowthRate - 1);
     return plantData.growTime * growTimeMultiplier;
 }
 exports.calculateGrowthPercent = (plant, userStats, plantData) => {
-    return Math.clamp((((Date.now() - plant.planted) - plant.timeUnwatered) / calculateGrowTime(userStats, plantData)), 0, 1)
+    if (!plantData) return 0;
+    return Math.clamp((((Date.now() - plant.planted) - plant.timeUnwatered + plant.growthOffset) / calculateGrowTime(userStats, plantData)), 0, 1)
 }
 
 exports.fixDefaultGarden = (user) => {
-    if (user.garden.plants.length == 0) {
-        for (let i = 0; i < 8; i++) user.garden.plants.push({ name: "none", planted: null, lastWatered: null, timeUnwatered: 0, lastUnwateredUpdate: new Date() });
+    for (let i = 0; i < 8; i++) {
+        var plant = user.garden.plants[i];
+         // if there is no object
+        if (!plant) 
+            user.garden.plants.push(plantSchema);
+        else {
+            // fix values that should be defined
+            for (const [key, value] of Object.entries(plantSchema.paths)) {
+                if (key == "_id") continue;
+                if (value.defaultValue != undefined && plant[key] == undefined) {
+                    plant[key] = value.defaultValue;
+                }
+            }
+        }
     }
 }

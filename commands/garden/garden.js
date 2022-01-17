@@ -94,7 +94,7 @@ module.exports = {
                 .setTitle(message.author.username + "'s garden")
             if (upgradeList != "") embed.addField("upgrades", upgradeList);
             for (plant of plantList) {
-                embed.addField(plant[0], plant[1], true);
+                if (plant[1]) embed.addField(plant[0], plant[1], true);
             }
             //if (plantList[0] != "") embed.addField("plants", plantList[0]);
             //if (plantList[1] != "") embed.addField("plants", plantList[1]);
@@ -130,7 +130,7 @@ module.exports = {
 
             context.drawImage(garden, 0, fenceHeight, garden.naturalWidth, garden.naturalHeight);
             if (fence) context.drawImage(fence, 0, 0, fence.naturalWidth, fence.naturalHeight);
-            if (path) context.drawImage(path, 89, 40 + fenceHeight, path.naturalWidth, path.naturalHeight);
+            if (path) context.drawImage(path, 88, 40 + fenceHeight, path.naturalWidth, path.naturalHeight);
             for (let layer = 0; layer < 3; layer++) {
                 // LIGHTING
                 if (layer == 1) {
@@ -192,8 +192,8 @@ module.exports = {
                     plotX += 36;
                     plotY += 18;
                     if (i == 3) {
-                        plotX = 120;
-                        plotY = 12;
+                        plotX = 122;
+                        plotY = 12 + fenceHeight;
                     }
                 }
             }

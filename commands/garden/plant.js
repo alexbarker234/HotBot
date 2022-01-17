@@ -1,6 +1,8 @@
 const creatureUserModel = require('../../models/creatureUserSchema');
+const plantSchema = require('../../models/plantSchema');
 const gardenFunctions = require('../../gardenFunctions.js')
 const functions = require('../../functions.js')
+const mongoose = require('mongoose')
 
 module.exports = {
     name: 'plant',
@@ -31,7 +33,13 @@ module.exports = {
         plot -= 1;
         if (user.garden.plants[plot].name != "none") return message.channel.send(`plot ${plot + 1} is already taken up by ${user.garden.plants[plot].name}`)
 
-        user.garden.plants[plot] = {name: plantName, planted: new Date(), lastWatered: new Date(), timeUnwatered: 0, lastUnwateredUpdate: new Date()};
+        //user.garden.plants[plot] = {name: plantName, planted: new Date(), lastWatered: new Date(), timeUnwatered: 0, lastUnwateredUpdate: new Date()};
+        Object.assign(user.garden.plants[plot], {
+            name : plantName,  
+            planted: new Date(), 
+            lastWatered: new Date(),
+            lastUnwateredUpdate: new Date()
+        })
         functions.removeThingFromUser(user.inventory.seeds, plantName + " Seeds", 1);
 
         message.channel.send(`successfully planted ${plantName} in plot ${plot + 1}`)
