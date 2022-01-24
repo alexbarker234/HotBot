@@ -1,7 +1,0 @@
--8ball: make it seeded off the message content and the time (10 minute interval)
--make trade deal expire after 1 day
--make sell capitalise ur input
--make creature stats show top 10 creature capturers instead of just 1
--add remaining bait to !bait
--<#862206016510361603>
--add completion fraction to creaturestats

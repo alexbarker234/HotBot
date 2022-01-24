@@ -1,14 +1,32 @@
-const Discord = require('discord.js');
-const keepAlive = require('./server');
-const mongoose = require('mongoose');
-const functions = require('./functions.js');
-const timerFunctions = require('./timerFunctions.js');
-const fs = require('fs');
-const ms = require('ms');
 var path = require('path');
+global.appRoot = path.resolve(__dirname);
+global.src = global.appRoot + "/src";
+
+require('./src/extensions.js')
+const Discord = require('discord.js');
+const keepAlive = require('./src/server');
+const mongoose = require('mongoose');
+const timerFunctions = require('./src/functions/timerFunctions.js');
+const fs = require('fs');
 require('dotenv').config() // remove in replit..?
 
-global.appRoot = path.resolve(__dirname);
+const Canvas = require('canvas');
+Canvas.registerFont('./src/fonts/Notalot60.ttf', { family: 'Notalot60' });
+
+// logging
+var log4js = require("log4js");
+log4js.configure({
+    appenders: {
+        fileAppender: { type: 'file', filename: './logs/console.log' },
+        consoleAppender: { type: 'console' }
+    },
+    categories: { default: { appenders: ['fileAppender', 'consoleAppender'], level: 'all' } }
+});
+console.logger = log4js.getLogger(); // probs trash
+fs.appendFile('./logs/console.log', "\n\n\n", (err) => { if (err) throw err; });
+console.logger.info("started logger")
+
+// define bot client
 
 const client = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -29,12 +47,14 @@ client.creatures = new Discord.Collection();
 client.fish = new Discord.Collection();
 client.prefixes = new Discord.Collection();
 
-const handlers = fs.readdirSync('./handlers').filter(file => file.endsWith('.js'));
+const handlers = fs.readdirSync('./src/handlers').filter(file => file.endsWith('.js'));
 for (handler of handlers)
-    require(`./handlers/${handler}`)(client, Discord);
+    require(`./src/handlers/${handler}`)(client, Discord);
 
+// for uptime robot
 keepAlive();
 
+// run all timers
 timerFunctions.runTimer(client);
 
 mongoose
@@ -48,18 +68,15 @@ mongoose
     )
     .then(() => {
         console.log('located the juice');
-        //monitor()
-        
     })
     .catch(err => {
-        console.log(err);
+        console.logger.error(err);
     });
 
 //client.on('debug', console.log);
 client.on('rateLimit', info => {
     console.log(
-        `Rate limit hit ${
-        info.timeDifference
+        `Rate limit hit ${info.timeDifference
             ? info.timeDifference
             : info.timeout
                 ? info.timeout
