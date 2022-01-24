@@ -47,7 +47,7 @@ module.exports = {
                 if (userStats.eggSlots < i) break;
                 context.drawImage(nestBack, offsets[i].x, offsets[i].y, 42, 28);
                 if (user.eggs[i]) {
-                    var eggTex = await Canvas.loadImage(`./assets/creatures/${user.eggs[i].name}Egg.png`);
+                    var eggTex = await Canvas.loadImage(global.src + `/assets/creatures/${user.eggs[i].name}Egg.png`);
                     context.drawImage(eggTex,
                         0, 0, 
                         eggTex.naturalWidth, eggTex.naturalHeight - 4, 

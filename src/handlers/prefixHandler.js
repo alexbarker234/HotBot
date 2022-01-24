@@ -1,4 +1,4 @@
-const guildSettingsModel = require('../models/guildSettingsSchema');
+const guildSettingsModel = require(global.src + '/models/guildSettingsSchema');
 
 module.exports = async (client, Discord) =>{
     guildSettingsModel.find({} , (err, guilds) => {

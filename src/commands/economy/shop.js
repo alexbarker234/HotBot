@@ -62,12 +62,12 @@ module.exports = {
                 .setDescription("do !buy <item> to buy an item." +
                     (args[0] == "boosts" ? " boosts are activated instantly, and do not stack" : ""))
 
-            const itemTypes = fs.readdirSync(`./items/${args[0]}`);
+            const itemTypes = fs.readdirSync(global.src + `/items/${args[0]}`);
             if (shopsNormal.includes(args[0])) {
                 let itemText = [""];
                 let textIndex = 0;
                 for (const item of itemTypes) {
-                    const itemData = require(`../../items/${args[0]}/${item}`);
+                    const itemData = require(global.src + `/items/${args[0]}/${item}`);
                     if (itemData.cantBuy) continue;
 
                     let line = getItemText(client, itemData, args[0], user);
@@ -85,9 +85,9 @@ module.exports = {
             else {
                 for (const itemType of itemTypes) {
                     let itemText = "";
-                    let items = fs.readdirSync(`./items/${args[0]}/${itemType}`).filter(file => file.endsWith('.js'));
+                    let items = fs.readdirSync(global.src + `/items/${args[0]}/${itemType}`).filter(file => file.endsWith('.js'));
                     for (const item of items) {
-                        const itemData = require(`../../items/${args[0]}/${itemType}/${item}`);
+                        const itemData = require(global.src + `/items/${args[0]}/${itemType}/${item}`);
                         if (itemData.cantBuy || itemData.hideInShop) continue;
                         itemText += getItemText(client, itemData, args[0], user);
                     }

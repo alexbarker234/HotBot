@@ -7,7 +7,7 @@ module.exports = {
     usage: "%PREFIX%changelog [version]\n"
         + "%PREFIX%changelog list",
     execute(client, message, args, user, userStats){
-        let logs = fs.readdirSync('./changelogs/')
+        let logs = fs.readdirSync(global.src + '/changelogs/')
         if (args[0] == "list") {
             let logString = "";
             for (const log of logs) 
@@ -27,7 +27,7 @@ module.exports = {
                 if (!logs.includes(args[0])) return message.channel.send("changelog doesnt exist")
                 file = args[0];
             }
-            var data = fs.readFileSync(`./changelogs/${file}.txt`, 'utf8');
+            var data = fs.readFileSync(global.src + `/changelogs/${file}.txt`, 'utf8');
             const embed = new MessageEmbed()
             .setColor('#f0c862')
             .setTitle(`HotBot ${file.replace(".txt", "")}`)

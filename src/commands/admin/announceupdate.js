@@ -9,7 +9,7 @@ module.exports = {
     usage: "%PREFIX%announceupdate <version>",
     admin: true,
     async execute(client, message, args, user, userStats) {
-        let logs = fs.readdirSync('./changelogs/')
+        let logs = fs.readdirSync(global.src + '/changelogs/')
         logs = logs.map(x => x.replaceAll(".txt", ""))
 
         if (!args[0]) return message.channel.send("specify changelog to send");
@@ -17,7 +17,7 @@ module.exports = {
         if (!logs.includes(args[0])) return message.channel.send("changelog doesnt exist")
         file = args[0];
 
-        var data = fs.readFileSync(`./changelogs/${file}.txt`, 'utf8');
+        var data = fs.readFileSync(global.src + `/changelogs/${file}.txt`, 'utf8');
 
         const embed = new MessageEmbed()
         .setColor('#f0c862')

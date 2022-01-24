@@ -80,7 +80,7 @@ async function traderNotification(client, guild) {
         if (!guild.sentAlert.gobbyTrader) {
             console.log("sending gobby trader notification");
 
-            const image = new MessageAttachment(`./assets/GobbyTrader.png`, 'trader.png');
+            const image = new MessageAttachment(global.src + '/assets/GobbyTrader.png', 'trader.png');
             const embed = new MessageEmbed()
                 .setColor('#84d997')
                 .setTitle("gobby trading boat")

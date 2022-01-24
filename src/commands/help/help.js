@@ -38,7 +38,7 @@ module.exports = {
                 .setTitle('commands')
                 .setDescription(`do ${prefix}help <cmd> to get more information on that command`)
             // loop through each type of command, looping through each command and ading commands of the same type to the embed
-            const commandTypes = fs.readdirSync('./commands/').filter(file => file != "admin");       
+            const commandTypes = fs.readdirSync(global.src + '/commands/').filter(file => file != "admin");       
             commandTypes.forEach(cmdType => {
                 let cmdHelp = "";
                 client.commands.forEach((command, key) => {

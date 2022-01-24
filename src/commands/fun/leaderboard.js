@@ -148,7 +148,7 @@ async function creatureBoardSpecific(client, message, creatureName) {
     if (total == 0) return message.channel.send("no one has found this creature yet")
 
     const creatureFile = client.creatures.get(creatureName);
-    const creatureImage = new MessageAttachment(`./assets/creatures/${creatureFile.name}.png`, 'creature.png');
+    const creatureImage = new MessageAttachment(global.src + `/assets/creatures/${creatureFile.name}.png`, 'creature.png');
 
     creatureName = creatureName.toLowerCase();
     if (leaderboard == "") leaderboard = "nothing";

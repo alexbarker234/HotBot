@@ -1,4 +1,4 @@
-const tradeModel = require('../../models/tradeSchema');
+const tradeModel = require(global.src + '/models/tradeSchema');
 const creatureUserModel = require(global.src + '/models/creatureUserSchema')
 const { MessageEmbed } = require('discord.js');
 const functions = require(global.src + '/functions/functions.js');
