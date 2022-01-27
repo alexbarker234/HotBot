@@ -7,6 +7,6 @@ module.exports = {
     cantSell: true,
     updateStats(statObject, amount) { 
         statObject.gardenWaterNeed -= 0.1 * amount;
-        statObject.gardenWaterNeedText +=  `Sprinkler: +${0.1 * amount * 100}%\n`;
+        statObject.gardenWaterNeedText +=  `Sprinkler: -${0.1 * amount * 100}%\n`;
     }
 }

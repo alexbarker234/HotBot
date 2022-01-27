@@ -45,8 +45,8 @@ module.exports = {
                 .addField(`artifact fish chance: ${f.fixFPErrors(userStats.artifactChance * 100)}%`, `${userStats.artifactChanceText}`)
                 
                 .addField(`garden plots: ${userStats.gardenPlots}`, `${userStats.gardenPlotsText}`)
-                .addField(`garden water need: ${f.fixFPErrors(userStats.gardenWaterNeed * 100)}`, `${userStats.gardenWaterNeedText}`)
-                .addField(`garden growth rate: ${f.fixFPErrors(userStats.gardenGrowthRate * 100)}`, `${userStats.gardenGrowthRateText}`);
+                .addField(`garden water need: ${f.fixFPErrors(userStats.gardenWaterNeed * 100)}%`, `${userStats.gardenWaterNeedText}`)
+                .addField(`garden growth rate: ${f.fixFPErrors(userStats.gardenGrowthRate * 100)}%`, `${userStats.gardenGrowthRateText}`);
             message.channel.send({ embeds: [embed] });
         }
     }

@@ -6,3 +6,57 @@
 
 
 [2022-01-24T15:24:08.676] [INFO] default - started logger
+
+
+
+[2022-01-27T17:49:46.171] [INFO] default - started logger
+[2022-01-27T17:49:53.543] [WARN] default - ReferenceError: line is not defined
+    at Object.execute (D:\OneDrive\General Files\Programming\HotBot\src\commands\garden\seeds.js:18:13)
+    at module.exports (D:\OneDrive\General Files\Programming\HotBot\src\events\guild\messageCreate.js:41:23)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+
+
+
+[2022-01-27T17:50:11.018] [INFO] default - started logger
+[2022-01-27T17:50:13.475] [WARN] default - ReferenceError: textIndex is not defined
+    at Object.execute (D:\OneDrive\General Files\Programming\HotBot\src\commands\garden\seeds.js:24:27)
+    at module.exports (D:\OneDrive\General Files\Programming\HotBot\src\events\guild\messageCreate.js:41:23)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+
+
+
+[2022-01-27T17:50:22.486] [INFO] default - started logger
+[2022-01-27T17:50:24.842] [WARN] default - RangeError [EMBED_FIELD_VALUE]: MessageEmbed field values must be non-empty strings.
+    at Function.verifyString (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\util\Util.js:413:41)
+    at Function.normalizeField (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:480:19)
+    at D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:501:14
+    at Array.map (<anonymous>)
+    at Function.normalizeFields (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:500:8)
+    at MessageEmbed.addFields (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:322:42)
+    at MessageEmbed.addField (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:313:17)
+    at Object.execute (D:\OneDrive\General Files\Programming\HotBot\src\commands\garden\seeds.js:34:14)
+    at module.exports (D:\OneDrive\General Files\Programming\HotBot\src\events\guild\messageCreate.js:41:23)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5) {
+  [Symbol(code)]: 'EMBED_FIELD_VALUE'
+}
+
+
+
+[2022-01-27T17:51:22.828] [INFO] default - started logger
+[2022-01-27T17:51:25.339] [WARN] default - RangeError [EMBED_FIELD_VALUE]: MessageEmbed field values must be non-empty strings.
+    at Function.verifyString (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\util\Util.js:413:41)
+    at Function.normalizeField (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:480:19)
+    at D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:501:14
+    at Array.map (<anonymous>)
+    at Function.normalizeFields (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:500:8)
+    at MessageEmbed.addFields (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:322:42)
+    at MessageEmbed.addField (D:\OneDrive\General Files\Programming\HotBot\node_modules\discord.js\src\structures\MessageEmbed.js:313:17)
+    at Object.execute (D:\OneDrive\General Files\Programming\HotBot\src\commands\garden\seeds.js:34:14)
+    at module.exports (D:\OneDrive\General Files\Programming\HotBot\src\events\guild\messageCreate.js:41:23)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5) {
+  [Symbol(code)]: 'EMBED_FIELD_VALUE'
+}
+
+
+
+[2022-01-27T17:51:47.182] [INFO] default - started logger
